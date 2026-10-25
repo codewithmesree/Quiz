@@ -335,8 +335,9 @@ export function WelcomePage({ onStart }: WelcomePageProps) {
                     aria-hidden="true"
                   />
                   <p className="text-[10px] leading-relaxed text-muted/55">
-                    Your team name is used only for this quiz session. Each
-                    answer locks permanently once submitted.
+                    Your team name is used only for this quiz session. Progress
+                    saves automatically on this device, and each answer locks
+                    permanently once submitted.
                   </p>
                 </div>
               </form>

@@ -1,13 +1,14 @@
-import { Lock, Users } from 'lucide-react'
+import { Lock, RotateCcw, Users } from 'lucide-react'
 import type { ScoreSummary } from '../types/quiz'
 import { BrandLogo } from './BrandLogo'
 
 interface QuizHeaderProps {
   teamName: string
   score: ScoreSummary
+  onReset: () => void
 }
 
-export function QuizHeader({ teamName, score }: QuizHeaderProps) {
+export function QuizHeader({ teamName, score, onReset }: QuizHeaderProps) {
   return (
     <header className="sticky top-0 z-30 border-b border-white/[0.08] bg-[#050505]/88 backdrop-blur-xl">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
@@ -44,6 +45,15 @@ export function QuizHeader({ teamName, score }: QuizHeaderProps) {
               pts
             </span>
           </div>
+          <button
+            type="button"
+            onClick={onReset}
+            aria-label="Reset quiz"
+            className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.03] px-2.5 py-1.5 text-[9px] font-semibold uppercase tracking-[0.16em] text-muted/70 transition-colors hover:border-hwi/50 hover:bg-hwi/[0.07] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-hwi"
+          >
+            <RotateCcw className="size-3.5" aria-hidden="true" />
+            <span className="hidden sm:inline">Reset</span>
+          </button>
         </div>
       </div>
 

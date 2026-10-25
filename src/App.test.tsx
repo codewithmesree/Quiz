@@ -1,19 +1,29 @@
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 import App from './App'
 import { MCQ_BY_ID, RIDDLE_BY_ID } from './data/questions'
+import { LEADERBOARD_STORAGE_KEY } from './utils/leaderboard'
+import { QUIZ_STORAGE_KEY } from './utils/persistence'
 
 type User = ReturnType<typeof userEvent.setup>
+type AppView = ReturnType<typeof render>
 
 async function fillProfile(user: User) {
   await user.type(screen.getByLabelText(/team name/i), 'Byte Force')
 }
 
-async function startQuiz(user: User) {
-  render(<App />)
+async function startQuiz(user: User): Promise<AppView> {
+  const view = render(<App />)
   await fillProfile(user)
   await user.click(screen.getByRole('button', { name: /start quiz/i }))
+  await screen.findByTestId('question-card')
+  return view
+}
+
+async function refresh(view: AppView) {
+  view.unmount()
+  render(<App />)
   await screen.findByTestId('question-card')
 }
 
@@ -30,7 +40,7 @@ async function answerCurrentMcq(user: User, correct = true) {
   await user.click(within(card).getByTestId(`option-${optionId}`))
   const feedback = within(card).getByTestId('feedback')
   expect(feedback).toHaveTextContent(correct ? /correct!/i : /incorrect/i)
-  return { card, question, feedback }
+  return { card, question, feedback, optionId }
 }
 
 async function goNext(user: User) {
@@ -50,9 +60,7 @@ async function completeMcqSection(user: User) {
 }
 
 async function enterNextSection(user: User) {
-  await user.click(
-    screen.getByRole('button', { name: /enter section 0[23]/i }),
-  )
+  await user.click(screen.getByRole('button', { name: /continue/i }))
   await screen.findByTestId('question-card')
 }
 
@@ -200,6 +208,245 @@ describe('riddle answer locking', () => {
   })
 })
 
+describe('localStorage session persistence', () => {
+  it('restores a locked incorrect answer and score in section 1', async () => {
+    const user = userEvent.setup()
+    const view = await startQuiz(user)
+
+    const { card, question, optionId } = await answerCurrentMcq(user, false)
+    const questionId = card.dataset.questionId
+    expect(questionId).toBeDefined()
+    expect(optionId).not.toBe(question.correctOptionId)
+
+    await waitFor(() => {
+      expect(window.localStorage.getItem(QUIZ_STORAGE_KEY)).toContain(
+        questionId,
+      )
+    })
+
+    await refresh(view)
+
+    const restored = screen.getByTestId('question-card')
+    expect(restored).toHaveAttribute('data-question-id', questionId)
+    expect(within(restored).getByTestId(`option-${optionId}`)).toHaveAttribute(
+      'data-state',
+      'wrong',
+    )
+    expect(
+      within(restored).getByTestId(`option-${question.correctOptionId}`),
+    ).toHaveAttribute('data-state', 'reveal')
+    expect(within(restored).getByTestId('feedback')).toHaveTextContent(
+      /incorrect/i,
+    )
+    expect(
+      within(restored)
+        .getAllByTestId(/^option-/)
+        .every((option) => (option as HTMLButtonElement).disabled),
+    ).toBe(true)
+    expect(screen.getByTestId('live-score')).toHaveTextContent('0/14')
+  })
+
+  it('restores the section break after section 1', async () => {
+    const user = userEvent.setup()
+    const view = await startQuiz(user)
+
+    await completeMcqSection(user)
+    expect(screen.getByTestId('section-break')).toHaveTextContent(
+      'Way to go! Keep it up!',
+    )
+
+    view.unmount()
+    render(<App />)
+
+    const breakScreen = await screen.findByTestId('section-break')
+    expect(breakScreen).toHaveTextContent('Way to go! Keep it up!')
+    expect(breakScreen).toHaveTextContent(/5\s*\/\s*5/i)
+    expect(screen.getByTestId('live-score')).toHaveTextContent('5/14')
+
+    await enterNextSection(user)
+    await screen.findByTestId('question-card')
+  })
+
+  it('restores the drawn question and locked answer in section 2', async () => {
+    const user = userEvent.setup()
+    const view = await startQuiz(user)
+
+    await completeMcqSection(user)
+    await enterNextSection(user)
+
+    const { card, optionId } = await answerCurrentMcq(user, true)
+    const questionId = card.dataset.questionId
+    expect(questionId).toBeDefined()
+
+    await waitFor(() => {
+      expect(window.localStorage.getItem(QUIZ_STORAGE_KEY)).toContain(
+        questionId,
+      )
+    })
+
+    await refresh(view)
+
+    const restored = screen.getByTestId('question-card')
+    expect(restored).toHaveAttribute('data-question-id', questionId)
+    expect(within(restored).getByTestId(`option-${optionId}`)).toHaveAttribute(
+      'data-state',
+      'correct',
+    )
+    expect(within(restored).getByTestId('feedback')).toHaveTextContent(
+      /correct!/i,
+    )
+    expect(screen.getByTestId('live-score')).toHaveTextContent('6/14')
+  })
+
+  it('restores a locked riddle answer in section 3', async () => {
+    const user = userEvent.setup()
+    const view = await startQuiz(user)
+
+    await completeMcqSection(user)
+    await enterNextSection(user)
+    await completeMcqSection(user)
+    await enterNextSection(user)
+
+    const { card } = await answerCurrentRiddle(user, riddleAnswer())
+    const questionId = card.dataset.questionId
+    const submitted = riddleAnswer()
+    expect(questionId).toBe('r1')
+
+    await waitFor(() => {
+      expect(window.localStorage.getItem(QUIZ_STORAGE_KEY)).toContain(
+        questionId,
+      )
+    })
+
+    await refresh(view)
+
+    const restored = screen.getByTestId('question-card')
+    expect(restored).toHaveAttribute('data-question-id', 'r1')
+    const input = within(restored).getByTestId('riddle-input')
+    expect(input).toBeDisabled()
+    expect(input).toHaveValue(submitted)
+    expect(within(restored).getByTestId('feedback')).toHaveTextContent(
+      /correct!/i,
+    )
+    expect(screen.getByTestId('live-score')).toHaveTextContent('11/14')
+  })
+
+  it('restores completed results until a new quiz is explicitly started', async () => {
+    const user = userEvent.setup()
+    let view = await startQuiz(user)
+
+    await completeMcqSection(user)
+    await enterNextSection(user)
+    await completeMcqSection(user)
+    await enterNextSection(user)
+
+    for (let index = 0; index < 4; index += 1) {
+      const card = screen.getByTestId('question-card')
+      const riddle = RIDDLE_BY_ID[card.dataset.questionId ?? '']
+      await answerCurrentRiddle(user, riddle.answerKey.accepted[0])
+      await goNext(user)
+    }
+
+    expect(screen.getByTestId('section-break')).toHaveTextContent(
+      "Congratulations! You've completed the quiz!",
+    )
+    view.unmount()
+    view = render(<App />)
+    expect(
+      await screen.findByTestId('section-break'),
+    ).toHaveTextContent("Congratulations! You've completed the quiz!")
+    await user.click(screen.getByRole('button', { name: /continue/i }))
+    await screen.findByRole('heading', { name: 'Byte Force' })
+    expect(screen.getAllByTestId('answer-row')).toHaveLength(14)
+    expect(
+      screen.getByRole('button', { name: /leaderboard/i }),
+    ).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /leaderboard/i }))
+    expect(
+      screen.getByRole('heading', { name: /team leaderboard/i }),
+    ).toBeInTheDocument()
+    expect(screen.getByText('Byte Force')).toBeInTheDocument()
+    expect(screen.getByText('14/14')).toBeInTheDocument()
+    expect(screen.getByText('100%')).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /back to results/i }))
+    await screen.findByRole('heading', { name: 'Byte Force' })
+    expect(JSON.parse(window.localStorage.getItem(LEADERBOARD_STORAGE_KEY) ?? '[]')).toHaveLength(1)
+
+    view.unmount()
+    render(<App />)
+
+    await screen.findByRole('heading', { name: 'Byte Force' })
+    expect(
+      screen.getByRole('img', {
+        name: /final score: 14 out of 14, 100 percent/i,
+      }),
+    ).toBeInTheDocument()
+    expect(screen.getAllByTestId('answer-row')).toHaveLength(14)
+    expect(
+      screen.queryByRole('button', { name: /restart quiz/i }),
+    ).not.toBeInTheDocument()
+
+    expect(
+      screen.queryByRole('button', { name: /new session/i }),
+    ).not.toBeInTheDocument()
+  })
+
+  it('confirms before resetting an unfinished quiz', async () => {
+    const user = userEvent.setup()
+    const view = await startQuiz(user)
+
+    const { card, optionId } = await answerCurrentMcq(user, true)
+    const questionId = card.dataset.questionId
+    await waitFor(() => {
+      expect(window.localStorage.getItem(QUIZ_STORAGE_KEY)).toContain(
+        questionId,
+      )
+    })
+
+    await user.click(screen.getByRole('button', { name: /reset quiz/i }))
+    const dialog = await screen.findByRole('dialog')
+    expect(dialog).toHaveTextContent(/reset this quiz/i)
+    expect(dialog).toHaveTextContent(/cannot be undone/i)
+
+    await user.click(
+      within(dialog).getByRole('button', { name: /keep playing/i }),
+    )
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(screen.getByTestId('question-card')).toHaveAttribute(
+      'data-question-id',
+      questionId,
+    )
+    expect(
+      within(screen.getByTestId('question-card')).getByTestId(
+        `option-${optionId}`,
+      ),
+    ).toBeDisabled()
+
+    await user.click(screen.getByRole('button', { name: /reset quiz/i }))
+    const confirmDialog = await screen.findByRole('dialog')
+    await user.click(
+      within(confirmDialog).getByRole('button', { name: /reset quiz/i }),
+    )
+
+    await screen.findByRole('heading', { name: /access denied/i })
+    expect(screen.queryByTestId('question-card')).not.toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(window.localStorage.getItem(QUIZ_STORAGE_KEY)).toBeNull()
+    })
+
+    view.unmount()
+    render(<App />)
+    expect(
+      screen.getByRole('heading', { name: /access denied/i }),
+    ).toBeInTheDocument()
+  })
+})
+
+function riddleAnswer() {
+  return RIDDLE_BY_ID.r1.answerKey.accepted[0]
+}
+
 describe('complete quiz journey', () => {
   it('scores a perfect session, shows the full report, and restarts cleanly', async () => {
     const user = userEvent.setup()
@@ -208,17 +455,14 @@ describe('complete quiz journey', () => {
     // Section 1
     await completeMcqSection(user)
     expect(screen.getByTestId('section-break')).toHaveTextContent(
-      /section 01 cleared/i,
-    )
-    expect(screen.getByTestId('section-break')).toHaveTextContent(
-      /5\s*\/\s*5/i,
+      'Way to go! Keep it up!',
     )
     await enterNextSection(user)
 
     // Section 2
     await completeMcqSection(user)
     expect(screen.getByTestId('section-break')).toHaveTextContent(
-      /section 02 cleared/i,
+      "Great job! You're almost there!",
     )
     await enterNextSection(user)
 
@@ -240,6 +484,10 @@ describe('complete quiz journey', () => {
       await goNext(user)
     }
 
+    expect(screen.getByTestId('section-break')).toHaveTextContent(
+      "Congratulations! You've completed the quiz!",
+    )
+    await user.click(screen.getByRole('button', { name: /continue/i }))
     await screen.findByRole('heading', { name: 'Byte Force' })
 
     expect(
@@ -262,14 +510,8 @@ describe('complete quiz journey', () => {
     ).toBeGreaterThan(0)
     expect(screen.getByText(/perfect run/i)).toBeInTheDocument()
 
-    await user.click(screen.getByRole('button', { name: /restart quiz/i }))
-
     expect(
-      screen.getByRole('heading', { name: /access denied/i }),
-    ).toBeInTheDocument()
-    expect(screen.getByLabelText(/team name/i)).toHaveValue('')
-    expect(screen.queryByLabelText(/player/i)).not.toBeInTheDocument()
-    expect(screen.queryByTestId('answer-row')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('live-score')).not.toBeInTheDocument()
+      screen.queryByRole('button', { name: /restart quiz/i }),
+    ).not.toBeInTheDocument()
   })
 })

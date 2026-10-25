@@ -4,6 +4,7 @@ import { afterEach, vi } from 'vitest'
 
 afterEach(() => {
   cleanup()
+  window.localStorage.clear()
 })
 
 // jsdom does not implement scrolling or media queries used by the app.

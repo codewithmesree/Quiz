@@ -1,10 +1,11 @@
-import { useCallback, useMemo, useReducer } from 'react'
+import { useCallback, useEffect, useMemo, useReducer } from 'react'
 import type {
   AnswerRecord,
   MCQOptionId,
   PlayerProfile,
   QuizPhase,
   QuizSession,
+  QuizState,
   SectionId,
   ScoreSummary,
 } from '../types/quiz'
@@ -16,15 +17,10 @@ import {
   isSessionComplete,
 } from '../utils/session'
 import { isRiddleAnswerCorrect } from '../utils/answers'
-
-interface QuizState {
-  phase: QuizPhase
-  session: QuizSession | null
-  currentSection: SectionId
-  currentIndex: number
-  /** Set after the final question of section 1 or 2 is completed. */
-  sectionBreak: SectionId | null
-}
+import {
+  loadQuizState,
+  saveQuizState,
+} from '../utils/persistence'
 
 type QuizAction =
   | { type: 'start'; session: QuizSession }
@@ -171,16 +167,19 @@ function quizReducer(state: QuizState, action: QuizAction): QuizState {
 
       if (!isSessionComplete(state.session)) return state
 
-      return { ...state, phase: 'results', sectionBreak: null }
+      return { ...state, sectionBreak: 3 }
     }
 
     case 'enter-next-section': {
       if (
         state.phase !== 'quiz' ||
-        state.sectionBreak === null ||
-        state.sectionBreak === 3
+        state.sectionBreak === null
       ) {
         return state
+      }
+      if (state.sectionBreak === 3) {
+        if (!state.session || !isSessionComplete(state.session)) return state
+        return { ...state, phase: 'results', sectionBreak: null }
       }
       return {
         ...state,
@@ -219,7 +218,17 @@ export interface UseQuizResult {
 }
 
 export function useQuiz(): UseQuizResult {
-  const [state, dispatch] = useReducer(quizReducer, INITIAL_STATE)
+  const [state, dispatch] = useReducer(
+    quizReducer,
+    undefined,
+    () => loadQuizState() ?? INITIAL_STATE,
+  )
+
+  // Every committed state change is written immediately, including each
+  // submitted answer. The welcome phase clears the previous attempt.
+  useEffect(() => {
+    saveQuizState(state)
+  }, [state])
 
   const currentQuestion = useMemo(
     () =>

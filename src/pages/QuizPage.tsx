@@ -1,5 +1,7 @@
+import { useCallback, useState } from 'react'
 import { SECTION_BY_ID } from '../data/questions'
 import type { UseQuizResult } from '../hooks/useQuiz'
+import { ConfirmDialog } from '../components/ConfirmDialog'
 import { MCQCard } from '../components/MCQCard'
 import { QuizHeader } from '../components/QuizHeader'
 import { RiddleCard } from '../components/RiddleCard'
@@ -11,6 +13,8 @@ interface QuizPageProps {
 }
 
 export function QuizPage({ quiz }: QuizPageProps) {
+  const [showResetConfirm, setShowResetConfirm] = useState(false)
+  const closeResetConfirm = useCallback(() => setShowResetConfirm(false), [])
   const {
     session,
     currentSection,
@@ -34,7 +38,11 @@ export function QuizPage({ quiz }: QuizPageProps) {
 
   return (
     <div className="relative z-10 min-h-dvh">
-      <QuizHeader teamName={session.profile.teamName} score={score} />
+      <QuizHeader
+        teamName={session.profile.teamName}
+        score={score}
+        onReset={() => setShowResetConfirm(true)}
+      />
 
       <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8 lg:py-10">
         {sectionBreak ? (
@@ -108,6 +116,18 @@ export function QuizPage({ quiz }: QuizPageProps) {
           </div>
         )}
       </main>
+
+      <ConfirmDialog
+        open={showResetConfirm}
+        title="Reset this quiz?"
+        description="Every answer, point, and question drawn in this session will be cleared. This cannot be undone."
+        confirmLabel="Reset quiz"
+        onConfirm={() => {
+          setShowResetConfirm(false)
+          quiz.restart()
+        }}
+        onCancel={closeResetConfirm}
+      />
     </div>
   )
 }

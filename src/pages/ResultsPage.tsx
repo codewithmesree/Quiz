@@ -3,7 +3,6 @@ import {
   Award,
   CircleCheck,
   CircleX,
-  RotateCcw,
   Sparkles,
   Target,
   Trophy,
@@ -24,7 +23,7 @@ import { SectionIcon } from '../components/SectionIcon'
 interface ResultsPageProps {
   session: QuizSession
   score: ScoreSummary
-  onRestart: () => void
+  onShowLeaderboard: () => void
 }
 
 const STAT_TONES = {
@@ -34,7 +33,11 @@ const STAT_TONES = {
   neutral: 'border-white/[0.08] bg-white/[0.02]',
 } as const
 
-export function ResultsPage({ session, score, onRestart }: ResultsPageProps) {
+export function ResultsPage({
+  session,
+  score,
+  onShowLeaderboard,
+}: ResultsPageProps) {
   const performanceLabel = getPerformanceLabel(score.percentage)
   const perfectSections = QUIZ_SECTIONS.filter((meta) => {
     const section = score.sections[meta.id]
@@ -115,9 +118,9 @@ export function ResultsPage({ session, score, onRestart }: ResultsPageProps) {
                   Review answers
                   <ArrowDown className="size-3" aria-hidden="true" />
                 </a>
-                <Button variant="outline" onClick={onRestart}>
-                  <RotateCcw className="size-3.5" aria-hidden="true" />
-                  New session
+                <Button variant="outline" onClick={onShowLeaderboard}>
+                  <Trophy className="size-3.5" aria-hidden="true" />
+                  Leaderboard
                 </Button>
                 <span className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted/40">
                   {perfectSections} of 3 sections perfect
@@ -303,24 +306,6 @@ export function ResultsPage({ session, score, onRestart }: ResultsPageProps) {
           <ResultsBreakdown session={session} />
         </div>
 
-        <section className="surface mt-9 flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-7">
-          <div>
-            <p className="text-[9px] font-bold uppercase tracking-[0.24em] text-hwi">
-              Run it back
-            </p>
-            <h2 className="mt-1.5 font-display text-xl font-bold text-white">
-              New session. New draw.
-            </h2>
-            <p className="mt-1 max-w-lg text-xs leading-relaxed text-muted/60">
-              Restarting clears every answer and score, returns to check-in, and
-              draws a fresh set of questions for the next session.
-            </p>
-          </div>
-          <Button onClick={onRestart} size="lg" className="w-full shrink-0 sm:w-auto">
-            <RotateCcw className="size-4" aria-hidden="true" />
-            Restart Quiz
-          </Button>
-        </section>
       </main>
 
       <footer className="border-t border-white/[0.06] px-5 py-5 sm:px-8">

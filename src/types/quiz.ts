@@ -74,6 +74,19 @@ export interface QuizSession {
 
 export type QuizPhase = 'welcome' | 'quiz' | 'results'
 
+/**
+ * Complete runtime state of a quiz attempt. Persisted to localStorage so a
+ * refresh resumes exactly where the team left off.
+ */
+export interface QuizState {
+  phase: QuizPhase
+  session: QuizSession | null
+  currentSection: SectionId
+  currentIndex: number
+  /** Set after the final question of section 1 or 2 is completed. */
+  sectionBreak: SectionId | null
+}
+
 export type SectionScoreMap = Record<SectionId, { score: number; total: number }>
 
 export interface ScoreSummary {

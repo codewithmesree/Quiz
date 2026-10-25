@@ -24,8 +24,10 @@ Built with React 19, TypeScript, Vite, and Tailwind CSS v4.
 - **Riddle normalization** — answers are trimmed, lowercased, stripped of punctuation/articles, and checked against an accepted-variants list.
 - **Section breaks** — a score summary appears between rounds before the next section unlocks.
 - **Final report only after all 14** — team name, per-section scores, total/14, percentage, correct/incorrect counts, and a full answer breakdown.
-- **Clean restart** — clears the session and returns to check-in for a brand-new draw.
-- **No backend or persistence** — everything runs locally in the browser; refreshing starts over.
+- **Refresh-safe session** — the active attempt is saved to browser `localStorage` after every answer. A refresh restores the same draw, section, question, locked answers, feedback, and score.
+- **Persistent results** — completed results survive a refresh until the team explicitly starts a new quiz.
+- **Guarded reset** — resetting an unfinished attempt asks for confirmation before clearing progress.
+- **Clean restart** — starting over clears the saved attempt and returns to team check-in for a brand-new draw.
 
 ### Design & accessibility
 
@@ -76,13 +78,13 @@ Open the printed URL — usually <http://localhost:5173>.
 
 ### Tests
 
-The suite covers the question bank, shuffle sampling, scoring, riddle normalization, and the end-to-end UI flow (validation → locked answers → section break → riddles → results → restart).
+The suite covers the question bank, shuffle sampling, scoring, riddle normalization, persistence validation, and the full UI flow including refresh recovery in every section, locked answers, section breaks, riddle marking, completed results, and reset confirmation.
 
 ```bash
 npm test
 ```
 
-Expected: **6 files, 28 tests passing.**
+Expected: **7 files, 38 tests passing.**
 
 ---
 
@@ -97,12 +99,13 @@ src/
 │  ├─ shuffle.ts            # Fisher–Yates sampling
 │  ├─ session.ts            # Session creation and lookup helpers
 │  ├─ scoring.ts            # Derived score summary
-│  └─ answers.ts            # Riddle answer normalization
+│  ├─ answers.ts            # Riddle answer normalization
+│  └─ persistence.ts        # Versioned localStorage save/restore
 ├─ pages/
 │  ├─ WelcomePage.tsx       # Team check-in
 │  ├─ QuizPage.tsx          # Question flow and section breaks
 │  └─ ResultsPage.tsx       # Final report
-├─ components/              # Cards, header, sidebar, score ring, breakdown
+├─ components/              # Cards, header, sidebar, reset dialog, breakdown
 ├─ index.css                # Theme tokens, surfaces, fields, motion
 └─ test/setup.ts            # jsdom + Testing Library setup
 
@@ -181,7 +184,8 @@ gh repo create hwi-saiu-quiz --public --source=. --remote=origin --push
 ## Notes
 
 - Scores are always derived from the immutable answer records — they are never incremented on click, so double submissions cannot inflate a result.
-- The app stores nothing in `localStorage`; a refresh intentionally resets the session.
+- The active attempt is stored under `hwi-saiu-quiz-state` in `localStorage`. The snapshot is versioned and revalidated on load; only selected question IDs are trusted, while prompts, options, and answer keys are rehydrated from `src/data/questions.ts`.
+- No backend, account, or external database is used. Clearing browser storage removes the saved attempt.
 - `Q6` (“largest storage capacity”) and the riddle keys include notes where the source answer is debatable or provisional.
 
 ---
