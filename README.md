@@ -23,7 +23,7 @@ Built with React 19, TypeScript, Vite, and Tailwind CSS v4.
 - **Permanent answer lock** — each question accepts exactly one submission. There is no backward navigation and no way to re-score a question.
 - **Riddle normalization** — answers are trimmed, lowercased, stripped of punctuation/articles, and checked against an accepted-variants list.
 - **Section breaks** — a score summary appears between rounds before the next section unlocks.
-- **Final report only after all 14** — team name, player names, per-section scores, total/14, percentage, correct/incorrect counts, and a full answer breakdown.
+- **Final report only after all 14** — team name, per-section scores, total/14, percentage, correct/incorrect counts, and a full answer breakdown.
 - **Clean restart** — clears the session and returns to check-in for a brand-new draw.
 - **No backend or persistence** — everything runs locally in the browser; refreshing starts over.
 
@@ -99,7 +99,7 @@ src/
 │  ├─ scoring.ts            # Derived score summary
 │  └─ answers.ts            # Riddle answer normalization
 ├─ pages/
-│  ├─ WelcomePage.tsx       # Team/player check-in
+│  ├─ WelcomePage.tsx       # Team check-in
 │  ├─ QuizPage.tsx          # Question flow and section breaks
 │  └─ ResultsPage.tsx       # Final report
 ├─ components/              # Cards, header, sidebar, score ring, breakdown

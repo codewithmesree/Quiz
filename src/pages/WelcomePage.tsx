@@ -7,7 +7,6 @@ import {
   LockKeyhole,
   ShieldCheck,
   Sparkles,
-  UserRound,
   Users,
 } from 'lucide-react'
 import { QUIZ_SECTIONS, TOTAL_QUESTIONS } from '../data/questions'
@@ -20,49 +19,15 @@ interface WelcomePageProps {
   onStart: (profile: PlayerProfile) => void
 }
 
-type FieldName = 'teamName' | 'player1' | 'player2' | 'player3'
+type FieldName = 'teamName'
 
 type FormValues = Record<FieldName, string>
 type FormErrors = Partial<Record<FieldName, string>>
 
-const FIELD_ORDER: FieldName[] = [
-  'teamName',
-  'player1',
-  'player2',
-  'player3',
-]
-
-const PLAYER_FIELDS: Array<{
-  name: FieldName
-  label: string
-  placeholder: string
-  autoComplete: string
-}> = [
-  {
-    name: 'player1',
-    label: 'Player 1',
-    placeholder: 'Full name',
-    autoComplete: 'off',
-  },
-  {
-    name: 'player2',
-    label: 'Player 2',
-    placeholder: 'Full name',
-    autoComplete: 'off',
-  },
-  {
-    name: 'player3',
-    label: 'Player 3',
-    placeholder: 'Full name',
-    autoComplete: 'off',
-  },
-]
+const FIELD_ORDER: FieldName[] = ['teamName']
 
 const EMPTY_FORM: FormValues = {
   teamName: '',
-  player1: '',
-  player2: '',
-  player3: '',
 }
 
 interface FieldProps {
@@ -152,15 +117,6 @@ export function WelcomePage({ onStart }: WelcomePageProps) {
     if (!values.teamName.trim()) {
       nextErrors.teamName = 'Enter your team name to continue.'
     }
-    if (!values.player1.trim()) {
-      nextErrors.player1 = "Enter player 1's name."
-    }
-    if (!values.player2.trim()) {
-      nextErrors.player2 = "Enter player 2's name."
-    }
-    if (!values.player3.trim()) {
-      nextErrors.player3 = "Enter player 3's name."
-    }
     return nextErrors
   }
 
@@ -181,11 +137,6 @@ export function WelcomePage({ onStart }: WelcomePageProps) {
 
     onStart({
       teamName: values.teamName.trim(),
-      players: [
-        values.player1.trim(),
-        values.player2.trim(),
-        values.player3.trim(),
-      ],
     })
   }
 
@@ -325,16 +276,16 @@ export function WelcomePage({ onStart }: WelcomePageProps) {
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="text-[9px] font-bold uppercase tracking-[0.26em] text-hwi">
-                    Player check-in
+                    Team check-in
                   </p>
                   <h2
                     id="setup-heading"
                     className="mt-1.5 font-display text-2xl font-bold tracking-tight text-white"
                   >
-                    Assemble your team
+                    Name your team
                   </h2>
                   <p className="mt-1.5 text-xs leading-relaxed text-muted/60">
-                    All four fields are required to unlock the arena.
+                    Enter a team name to unlock the arena.
                   </p>
                 </div>
                 <span className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-hwi/25 bg-hwi/[0.07]">
@@ -357,7 +308,7 @@ export function WelcomePage({ onStart }: WelcomePageProps) {
                       className="mt-0.5 size-3.5 shrink-0"
                       aria-hidden="true"
                     />
-                    Complete all four fields before starting the quiz.
+                    Complete the field before starting the quiz.
                   </div>
                 )}
 
@@ -373,30 +324,6 @@ export function WelcomePage({ onStart }: WelcomePageProps) {
                   onChange={(value) => updateField('teamName', value)}
                 />
 
-                <fieldset>
-                  <legend className="mb-2 flex w-full items-center justify-between text-[10px] font-semibold uppercase tracking-[0.18em] text-muted/70">
-                    <span>Team roster</span>
-                    <span className="text-[8px] font-medium tracking-[0.14em] text-muted/40">
-                      03 players
-                    </span>
-                  </legend>
-                  <div className="space-y-2.5">
-                    {PLAYER_FIELDS.map((field) => (
-                      <Field
-                        key={field.name}
-                        id={field.name}
-                        label={field.label}
-                        value={values[field.name]}
-                        placeholder={field.placeholder}
-                        error={errors[field.name]}
-                        icon={<UserRound className="size-3.5" />}
-                        autoComplete={field.autoComplete}
-                        onChange={(value) => updateField(field.name, value)}
-                      />
-                    ))}
-                  </div>
-                </fieldset>
-
                 <Button type="submit" size="lg" className="mt-2 w-full">
                   Start Quiz
                   <ArrowRight className="size-4" aria-hidden="true" />
@@ -408,8 +335,8 @@ export function WelcomePage({ onStart }: WelcomePageProps) {
                     aria-hidden="true"
                   />
                   <p className="text-[10px] leading-relaxed text-muted/55">
-                    Names are used only for this quiz session. Each answer locks
-                    permanently once submitted.
+                    Your team name is used only for this quiz session. Each
+                    answer locks permanently once submitted.
                   </p>
                 </div>
               </form>

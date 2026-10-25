@@ -28,11 +28,6 @@ export function createQuizSession(profile: PlayerProfile): QuizSession {
     id: createSessionId(),
     profile: {
       teamName: profile.teamName.trim(),
-      players: [
-        profile.players[0].trim(),
-        profile.players[1].trim(),
-        profile.players[2].trim(),
-      ],
     },
     section1: sample(SECTION_1_POOL, 5),
     section2: sample(SECTION_2_POOL, 5),

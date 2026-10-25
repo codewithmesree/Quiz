@@ -191,25 +191,12 @@ export function SessionSidebar({
             id="team-heading"
             className="text-[10px] font-semibold uppercase tracking-[0.24em] text-muted/70"
           >
-            Team roster
+            Team
           </h2>
         </div>
         <p className="mt-3 truncate font-display text-sm font-semibold text-white">
           {session.profile.teamName}
         </p>
-        <ol className="mt-3 space-y-2">
-          {session.profile.players.map((player, index) => (
-            <li
-              key={`${player}-${index}`}
-              className="flex items-center gap-2 text-[11px] text-muted/80"
-            >
-              <span className="flex size-5 items-center justify-center rounded-md border border-white/10 bg-white/[0.03] font-display text-[9px] font-bold text-hwi">
-                {String(index + 1).padStart(2, '0')}
-              </span>
-              <span className="truncate">{player}</span>
-            </li>
-          ))}
-        </ol>
         <div className="mt-4 flex items-start gap-2 rounded-lg border border-white/[0.06] bg-black/20 px-3 py-2.5">
           <ShieldCheck
             className="mt-0.5 size-3.5 shrink-0 text-hwi"

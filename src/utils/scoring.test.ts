@@ -5,7 +5,6 @@ import { computeScoreSummary, getPerformanceLabel } from './scoring'
 
 const PROFILE = {
   teamName: 'Byte Force',
-  players: ['Aarav', 'Meera', 'Kabir'] as [string, string, string],
 }
 
 function sessionWithResults(

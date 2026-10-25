@@ -8,9 +8,6 @@ type User = ReturnType<typeof userEvent.setup>
 
 async function fillProfile(user: User) {
   await user.type(screen.getByLabelText(/team name/i), 'Byte Force')
-  await user.type(screen.getByLabelText('Player 1'), 'Aarav')
-  await user.type(screen.getByLabelText('Player 2'), 'Meera')
-  await user.type(screen.getByLabelText('Player 3'), 'Kabir')
 }
 
 async function startQuiz(user: User) {
@@ -69,7 +66,7 @@ async function answerCurrentRiddle(user: User, answer: string) {
   return { card, riddle }
 }
 
-describe('welcome and player setup', () => {
+describe('welcome and team setup', () => {
   it('shows the branding, quiz structure and logo', () => {
     render(<App />)
 
@@ -87,28 +84,16 @@ describe('welcome and player setup', () => {
     expect(logo).toHaveAttribute('src', '/hwi-logo.png')
   })
 
-  it('blocks the quiz until all four fields are completed', async () => {
+  it('blocks the quiz until the team name is entered', async () => {
     const user = userEvent.setup()
     render(<App />)
 
     await user.click(screen.getByRole('button', { name: /start quiz/i }))
 
     expect(screen.getByRole('alert')).toHaveTextContent(
-      /complete all four fields/i,
+      /complete the field/i,
     )
     expect(screen.getByLabelText(/team name/i)).toHaveAttribute(
-      'aria-invalid',
-      'true',
-    )
-    expect(screen.getByLabelText('Player 1')).toHaveAttribute(
-      'aria-invalid',
-      'true',
-    )
-    expect(screen.getByLabelText('Player 2')).toHaveAttribute(
-      'aria-invalid',
-      'true',
-    )
-    expect(screen.getByLabelText('Player 3')).toHaveAttribute(
       'aria-invalid',
       'true',
     )
@@ -120,7 +105,7 @@ describe('welcome and player setup', () => {
       'false',
     )
     await user.click(screen.getByRole('button', { name: /start quiz/i }))
-    expect(screen.queryByTestId('question-card')).not.toBeInTheDocument()
+    await screen.findByTestId('question-card')
   })
 })
 
@@ -262,9 +247,6 @@ describe('complete quiz journey', () => {
         name: /final score: 14 out of 14, 100 percent/i,
       }),
     ).toBeInTheDocument()
-    expect(screen.getByText('Aarav')).toBeInTheDocument()
-    expect(screen.getByText('Meera')).toBeInTheDocument()
-    expect(screen.getByText('Kabir')).toBeInTheDocument()
     expect(
       screen.getByLabelText('Computer Knowledge: 5 out of 5'),
     ).toBeInTheDocument()
@@ -286,7 +268,7 @@ describe('complete quiz journey', () => {
       screen.getByRole('heading', { name: /access denied/i }),
     ).toBeInTheDocument()
     expect(screen.getByLabelText(/team name/i)).toHaveValue('')
-    expect(screen.getByLabelText('Player 1')).toHaveValue('')
+    expect(screen.queryByLabelText(/player/i)).not.toBeInTheDocument()
     expect(screen.queryByTestId('answer-row')).not.toBeInTheDocument()
     expect(screen.queryByTestId('live-score')).not.toBeInTheDocument()
   })

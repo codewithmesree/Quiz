@@ -49,8 +49,6 @@ export type AnyQuestion = MCQQuestion | RiddleQuestion
 
 export interface PlayerProfile {
   teamName: string
-  /** Exactly three players, in the order entered on the welcome screen. */
-  players: [string, string, string]
 }
 
 /** A submitted answer is created once and never mutated. */

@@ -4,7 +4,6 @@ import { createQuizSession, getCurrentQuestion } from './session'
 
 const PROFILE = {
   teamName: '  Byte Force  ',
-  players: ['  Aarav  ', 'Meera', ' Kabir '] as [string, string, string],
 }
 
 describe('quiz session creation', () => {
@@ -40,8 +39,7 @@ describe('quiz session creation', () => {
 
   it('trims profile data and starts with no answers', () => {
     const session = createQuizSession(PROFILE)
-    expect(session.profile.teamName).toBe('Byte Force')
-    expect(session.profile.players).toEqual(['Aarav', 'Meera', 'Kabir'])
+    expect(session.profile).toEqual({ teamName: 'Byte Force' })
     expect(session.answers).toEqual({})
   })
 

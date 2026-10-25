@@ -94,22 +94,6 @@ export function ResultsPage({ session, score, onRestart }: ResultsPageProps) {
                 how the session finished.
               </p>
 
-              <div className="mt-5 flex flex-wrap gap-2">
-                {session.profile.players.map((player, index) => (
-                  <span
-                    key={`${player}-${index}`}
-                    className="flex items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 py-2"
-                  >
-                    <span className="flex size-5 items-center justify-center rounded-md border border-hwi/25 bg-hwi/[0.08] font-display text-[9px] font-bold text-hwi">
-                      {String(index + 1).padStart(2, '0')}
-                    </span>
-                    <span className="text-[11px] font-medium text-white/80">
-                      {player}
-                    </span>
-                  </span>
-                ))}
-              </div>
-
               <div className="mt-6 flex flex-wrap items-center gap-3">
                 <span className="flex items-center gap-2 rounded-full border border-hwi/25 bg-hwi/[0.07] px-3.5 py-2">
                   <Sparkles className="size-3.5 text-hwi" aria-hidden="true" />
@@ -119,7 +103,7 @@ export function ResultsPage({ session, score, onRestart }: ResultsPageProps) {
                 </span>
                 <span className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.14em] text-muted/50">
                   <Users className="size-3.5 text-muted/40" aria-hidden="true" />
-                  3 players · 14 questions
+                  14 questions · 3 sections
                 </span>
               </div>
 
