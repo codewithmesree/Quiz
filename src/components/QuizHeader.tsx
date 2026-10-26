@@ -1,4 +1,4 @@
-import { Lock, RotateCcw, Users } from 'lucide-react'
+import { Home, Lock, LogOut, RotateCcw, Users } from 'lucide-react'
 import type { ScoreSummary } from '../types/quiz'
 import { BrandLogo } from './BrandLogo'
 
@@ -6,9 +6,23 @@ interface QuizHeaderProps {
   teamName: string
   score: ScoreSummary
   onReset: () => void
+  onExitToHome?: () => void
+  onOpenCodingChallenge?: () => void
+  /** Display name or email of the signed-in user, if any. */
+  signedInAs?: string | null
+  /** Called when the user clicks Sign out in the header. */
+  onSignOut?: () => void
 }
 
-export function QuizHeader({ teamName, score, onReset }: QuizHeaderProps) {
+export function QuizHeader({
+  teamName,
+  score,
+  onReset,
+  onExitToHome,
+  onOpenCodingChallenge,
+  signedInAs,
+  onSignOut,
+}: QuizHeaderProps) {
   return (
     <header className="sticky top-0 z-30 border-b border-white/[0.08] bg-[#050505]/88 backdrop-blur-xl">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
@@ -45,6 +59,30 @@ export function QuizHeader({ teamName, score, onReset }: QuizHeaderProps) {
               pts
             </span>
           </div>
+          {onOpenCodingChallenge && (
+            <button
+              type="button"
+              onClick={onOpenCodingChallenge}
+              title="Open Python Coding Challenge"
+              aria-label="Open Python Coding Challenge"
+              className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-hwi/30 bg-hwi/[0.08] px-2.5 py-1.5 text-[9px] font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:border-hwi/60 hover:bg-hwi/20 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-hwi"
+            >
+              <span className="size-1.5 rounded-full bg-hwi animate-pulse" />
+              <span className="hidden sm:inline">Python Lab</span>
+            </button>
+          )}
+          {onExitToHome && (
+            <button
+              type="button"
+              onClick={onExitToHome}
+              title="Return to Home (progress is saved)"
+              aria-label="Return to home page"
+              className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.03] px-2.5 py-1.5 text-[9px] font-semibold uppercase tracking-[0.16em] text-muted/70 transition-colors hover:border-white/30 hover:bg-white/[0.08] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-hwi"
+            >
+              <Home className="size-3.5" aria-hidden="true" />
+              <span className="hidden sm:inline">Home</span>
+            </button>
+          )}
           <button
             type="button"
             onClick={onReset}
@@ -54,6 +92,25 @@ export function QuizHeader({ teamName, score, onReset }: QuizHeaderProps) {
             <RotateCcw className="size-3.5" aria-hidden="true" />
             <span className="hidden sm:inline">Reset</span>
           </button>
+          {onSignOut && (
+            <div className="flex items-center gap-2 border-l border-white/10 pl-2">
+              {signedInAs && (
+                <span className="hidden max-w-[140px] truncate text-[9px] font-medium text-white/40 xl:inline" title={signedInAs}>
+                  {signedInAs}
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={onSignOut}
+                aria-label="Sign out"
+                title="Sign out"
+                className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.03] px-2.5 py-1.5 text-[9px] font-semibold uppercase tracking-[0.16em] text-muted/70 transition-colors hover:border-red-500/40 hover:bg-red-500/[0.07] hover:text-red-400 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-hwi"
+              >
+                <LogOut className="size-3.5" aria-hidden="true" />
+                <span className="hidden sm:inline">Sign out</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
 

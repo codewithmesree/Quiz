@@ -1,0 +1,31 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Team account profiles — only the signed-in owner may write their own doc
+    // (the document id is the Firebase Auth uid).
+    match /hwi_accounts/{uid} {
+      allow read: if request.auth != null;
+      allow create, update: if request.auth != null && request.auth.uid == uid;
+      allow delete: if false;
+    }
+
+    // Live team progress + public leaderboard.
+    // NOTE: write is open to any signed-in user. Tighten for production by
+    // storing the writer's uid on the doc and matching it (see TODO below).
+    match /hwi_teams/{teamId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+
+    // GameMaster live state (phase, isLive, announcements, live scores).
+    // Public read so lobby/phase-lock works for unsigned visitors; signed-in
+    // write so player tabs can push live scores and the admin tab can push
+    // phase changes. For a real event, restrict writes to an admin uid or a
+    // Cloud Function instead of any signed-in user.
+    match /hwi_system/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+  }
+}

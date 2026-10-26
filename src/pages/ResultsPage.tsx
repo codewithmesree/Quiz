@@ -1,8 +1,11 @@
 import {
   ArrowDown,
+  ArrowRight,
   Award,
   CircleCheck,
   CircleX,
+  Code2,
+  Home,
   Sparkles,
   Target,
   Trophy,
@@ -23,7 +26,10 @@ import { SectionIcon } from '../components/SectionIcon'
 interface ResultsPageProps {
   session: QuizSession
   score: ScoreSummary
-  onShowLeaderboard: () => void
+  onShowLeaderboard?: () => void
+  onOpenCodingChallenge?: () => void
+  onBackToHome?: () => void
+  gameIsComplete?: boolean
 }
 
 const STAT_TONES = {
@@ -37,6 +43,8 @@ export function ResultsPage({
   session,
   score,
   onShowLeaderboard,
+  onOpenCodingChallenge,
+  onBackToHome,
 }: ResultsPageProps) {
   const performanceLabel = getPerformanceLabel(score.percentage)
   const perfectSections = QUIZ_SECTIONS.filter((meta) => {
@@ -58,14 +66,28 @@ export function ResultsPage({
             </p>
           </div>
         </div>
-        <div className="flex shrink-0 items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/[0.05] px-3 py-1.5">
-          <CircleCheck
-            className="size-3 text-emerald-400"
-            aria-hidden="true"
-          />
-          <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-emerald-300">
-            Session complete
-          </span>
+        <div className="flex shrink-0 items-center gap-2.5">
+          {onBackToHome && (
+            <Button variant="outline" size="sm" onClick={onBackToHome} className="gap-1.5">
+              <Home className="size-3.5" aria-hidden="true" />
+              <span>Home</span>
+            </Button>
+          )}
+          {onShowLeaderboard && (
+            <Button variant="outline" size="sm" onClick={onShowLeaderboard} className="gap-1.5">
+              <Trophy className="size-3.5 text-hwi" aria-hidden="true" />
+              <span>Leaderboard</span>
+            </Button>
+          )}
+          <div className="flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/[0.05] px-3 py-1.5">
+            <CircleCheck
+              className="size-3 text-emerald-400"
+              aria-hidden="true"
+            />
+            <span className="text-[9px] font-bold uppercase tracking-[0.18em] text-emerald-300">
+              Session complete
+            </span>
+          </div>
         </div>
       </header>
 
@@ -118,10 +140,37 @@ export function ResultsPage({
                   Review answers
                   <ArrowDown className="size-3" aria-hidden="true" />
                 </a>
-                <Button variant="outline" onClick={onShowLeaderboard}>
-                  <Trophy className="size-3.5" aria-hidden="true" />
-                  Leaderboard
-                </Button>
+                {onOpenCodingChallenge && (
+                  <Button
+                    onClick={onOpenCodingChallenge}
+                    size="md"
+                    className="gap-2 shadow-[0_0_20px_rgba(255,0,85,0.3)]"
+                  >
+                    <Code2 className="size-3.5" aria-hidden="true" />
+                    <span>Proceed to Coding Rounds</span>
+                    <ArrowRight className="size-3.5" aria-hidden="true" />
+                  </Button>
+                )}
+                {onShowLeaderboard && (
+                  <Button
+                    variant="outline"
+                    onClick={onShowLeaderboard}
+                    className="gap-2"
+                  >
+                    <Trophy className="size-3.5 text-hwi" aria-hidden="true" />
+                    <span>Leaderboard</span>
+                  </Button>
+                )}
+                {onBackToHome && (
+                  <Button
+                    variant="outline"
+                    onClick={onBackToHome}
+                    className="gap-2"
+                  >
+                    <Home className="size-3.5" aria-hidden="true" />
+                    <span>Return to Home</span>
+                  </Button>
+                )}
                 <span className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted/40">
                   {perfectSections} of 3 sections perfect
                 </span>

@@ -205,6 +205,7 @@ function parseState(value: unknown): QuizState | null {
     currentSection,
     currentIndex,
     sectionBreak,
+    stageResults: isRecord(value.stageResults) ? (value.stageResults as import('../utils/progressionEngine').StageResultMap) : {},
   }
 }
 
@@ -225,11 +226,11 @@ export function loadQuizState(): QuizState | null {
   }
 }
 
-/** Saves the attempt. The welcome screen intentionally keeps no snapshot. */
+/** Saves the attempt. If no session exists, storage is cleared. */
 export function saveQuizState(state: QuizState): void {
   if (typeof window === 'undefined') return
 
-  if (state.phase === 'welcome') {
+  if (!state.session) {
     clearQuizState()
     return
   }
@@ -237,7 +238,10 @@ export function saveQuizState(state: QuizState): void {
   try {
     const payload: StoredQuizState = {
       version: STORAGE_VERSION,
-      state,
+      state: {
+        ...state,
+        phase: state.phase === 'welcome' ? (state.savedPhase ?? 'quiz') : state.phase,
+      },
     }
     window.localStorage.setItem(QUIZ_STORAGE_KEY, JSON.stringify(payload))
   } catch {

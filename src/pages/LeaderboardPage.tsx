@@ -1,15 +1,38 @@
-import { ArrowLeft, Trophy } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { ArrowLeft, Loader, Trophy } from 'lucide-react'
 import { BrandLogo } from '../components/BrandLogo'
 import { Button } from '../components/Button'
 import { TOTAL_QUESTIONS } from '../data/questions'
-import { getLeaderboardEntries } from '../utils/leaderboard'
+import type { CloudTeamRecord } from '../services/firebaseSync'
+import { subscribeToCloudLeaderboard } from '../services/firebaseSync'
 
 interface LeaderboardPageProps {
   onBack: () => void
+  backLabel?: string
 }
 
-export function LeaderboardPage({ onBack }: LeaderboardPageProps) {
-  const entries = getLeaderboardEntries()
+export function LeaderboardPage({ onBack, backLabel = 'Back to Results' }: LeaderboardPageProps) {
+  const [teams, setTeams] = useState<CloudTeamRecord[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    // subscribeToCloudLeaderboard returns null when Firebase is not configured.
+    // In that case loading stays true briefly then we clear it.
+    const unsub = subscribeToCloudLeaderboard((incoming) => {
+      setTeams(incoming)
+      setLoading(false)
+    })
+
+    if (!unsub) {
+      // Firebase not configured — nothing to show
+      setLoading(false)
+    }
+
+    return () => { unsub?.() }
+  }, [])
+
+  // Only show completed teams on the leaderboard
+  const completed = teams.filter((t) => t.isCompleted)
 
   return (
     <div className="relative z-10 flex min-h-dvh flex-col">
@@ -27,7 +50,7 @@ export function LeaderboardPage({ onBack }: LeaderboardPageProps) {
         </div>
         <Button variant="outline" onClick={onBack}>
           <ArrowLeft className="size-3.5" aria-hidden="true" />
-          Back to results
+          {backLabel}
         </Button>
       </header>
 
@@ -50,56 +73,68 @@ export function LeaderboardPage({ onBack }: LeaderboardPageProps) {
           className="mt-7 overflow-hidden rounded-xl border border-white/[0.08] bg-black/30"
           aria-label="Team rankings"
         >
-          <div className="grid grid-cols-[3.5rem_minmax(0,1fr)_5.5rem_4.5rem] gap-2 border-b border-white/[0.08] bg-white/[0.025] px-4 py-3 text-[8px] font-bold uppercase tracking-[0.16em] text-muted/50 sm:grid-cols-[5rem_minmax(0,1fr)_8rem_7rem] sm:px-6">
+          {/* Header row */}
+          <div className="grid grid-cols-[3.5rem_minmax(0,1fr)_5.5rem_5.5rem_4.5rem] gap-2 border-b border-white/[0.08] bg-white/[0.025] px-4 py-3 text-[8px] font-bold uppercase tracking-[0.16em] text-muted/50 sm:grid-cols-[5rem_minmax(0,1fr)_8rem_8rem_7rem] sm:px-6">
             <span>Rank</span>
             <span>Team</span>
             <span className="text-right">Correct</span>
+            <span className="text-right">Points</span>
             <span className="text-right">Score</span>
           </div>
 
-          {entries.length > 0 ? (
+          {loading && (
+            <div className="flex items-center justify-center gap-2 px-5 py-12 text-sm text-muted/60">
+              <Loader className="size-4 animate-spin" aria-hidden="true" />
+              Loading leaderboard…
+            </div>
+          )}
+
+          {!loading && completed.length === 0 && (
+            <p className="px-5 py-12 text-center text-sm text-muted/60">
+              No completed teams have been recorded yet.
+            </p>
+          )}
+
+          {!loading && completed.length > 0 && (
             <ol>
-              {entries.map((entry, index) => {
-                const previousScore = entries[index - 1]?.correctAnswers
-                const rank =
-                  previousScore === entry.correctAnswers
-                    ? entries.findIndex(
-                        (candidate) =>
-                          candidate.correctAnswers === entry.correctAnswers,
-                      ) + 1
+              {completed.map((team, index) => {
+                // Dense rank: same totalPoints = same rank
+                const rank = index === 0
+                  ? 1
+                  : completed[index - 1].totalPoints === team.totalPoints
+                    ? completed.findIndex((t) => t.totalPoints === team.totalPoints) + 1
                     : index + 1
 
+                const isTopThree = rank <= 3
                 return (
                   <li
-                    key={entry.sessionId}
-                    className="grid grid-cols-[3.5rem_minmax(0,1fr)_5.5rem_4.5rem] items-center gap-2 border-b border-white/[0.055] px-4 py-4 last:border-b-0 sm:grid-cols-[5rem_minmax(0,1fr)_8rem_7rem] sm:px-6"
+                    key={team.sessionId}
+                    className={`grid grid-cols-[3.5rem_minmax(0,1fr)_5.5rem_5.5rem_4.5rem] items-center gap-2 border-b border-white/[0.055] px-4 py-4 last:border-b-0 sm:grid-cols-[5rem_minmax(0,1fr)_8rem_8rem_7rem] sm:px-6 ${isTopThree ? 'bg-hwi/[0.03]' : ''}`}
                   >
-                    <span className="font-display text-sm font-bold tabular-nums text-hwi">
+                    <span className={`font-display text-sm font-bold tabular-nums ${isTopThree ? 'text-hwi' : 'text-white/50'}`}>
                       {String(rank).padStart(2, '0')}
                     </span>
                     <span className="min-w-0 truncate text-xs font-semibold text-white sm:text-sm">
-                      {entry.teamName}
+                      {team.teamName}
                     </span>
                     <span className="text-right font-display text-xs font-semibold tabular-nums text-white/80 sm:text-sm">
-                      {entry.correctAnswers}/{TOTAL_QUESTIONS}
+                      {team.totalCorrect}/{TOTAL_QUESTIONS}
+                    </span>
+                    <span className="text-right font-display text-xs font-bold tabular-nums text-hwi sm:text-sm">
+                      {team.totalPoints} pts
                     </span>
                     <span className="text-right font-display text-xs font-bold tabular-nums text-white sm:text-sm">
-                      {entry.percentage}%
+                      {team.percentage}%
                     </span>
                   </li>
                 )
               })}
             </ol>
-          ) : (
-            <p className="px-5 py-12 text-center text-sm text-muted/60">
-              No completed teams have been recorded yet.
-            </p>
           )}
         </section>
 
         <p className="mt-4 text-[10px] leading-relaxed text-muted/45">
-          Scores are saved in this browser on this device and are not shared
-          across devices.
+          Live rankings · updates in real time across all devices.
         </p>
       </main>
     </div>

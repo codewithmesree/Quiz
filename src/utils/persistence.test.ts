@@ -21,6 +21,7 @@ function stateWithFirstAnswer(
     currentSection: 1,
     currentIndex: 0,
     sectionBreak: null,
+    stageResults: {},
   }
 }
 
@@ -48,6 +49,7 @@ describe('quiz persistence', () => {
       currentSection: 1,
       currentIndex: 2,
       sectionBreak: null,
+      stageResults: {},
     }
 
     saveQuizState(state)
@@ -95,6 +97,7 @@ describe('quiz persistence', () => {
       currentSection: 1,
       currentIndex: 0,
       sectionBreak: null,
+      stageResults: {},
     }
 
     saveQuizState(state)
@@ -123,6 +126,7 @@ describe('quiz persistence', () => {
       currentSection: 1,
       currentIndex: 0,
       sectionBreak: null,
+      stageResults: {},
     })
 
     expect(window.localStorage.getItem(QUIZ_STORAGE_KEY)).toBeNull()

@@ -8,6 +8,8 @@ afterEach(() => {
 })
 
 // jsdom does not implement scrolling or media queries used by the app.
+window.HTMLElement.prototype.scrollIntoView = vi.fn()
+
 Object.defineProperty(window, 'scrollTo', {
   writable: true,
   value: vi.fn(),

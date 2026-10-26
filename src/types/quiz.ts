@@ -5,6 +5,8 @@
  * the session data needed to render a question.
  */
 
+import type { StageResultMap } from '../utils/progressionEngine'
+
 export type SectionId = 1 | 2 | 3
 
 export type MCQOptionId = 'A' | 'B' | 'C' | 'D'
@@ -85,6 +87,14 @@ export interface QuizState {
   currentIndex: number
   /** Set after the final question of section 1 or 2 is completed. */
   sectionBreak: SectionId | null
+  /** Track whether an in-progress session should resume to quiz or results */
+  savedPhase?: QuizPhase
+  /**
+   * Pass/fail history for each quiz stage (sections + riddles).
+   * This is the authoritative record — not derived from answers at runtime.
+   * Coding stage results are tracked in CodingChallengeState.completedStages.
+   */
+  stageResults: StageResultMap
 }
 
 export type SectionScoreMap = Record<SectionId, { score: number; total: number }>

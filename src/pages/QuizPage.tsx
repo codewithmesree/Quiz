@@ -10,9 +10,12 @@ import { SessionSidebar } from '../components/SessionSidebar'
 
 interface QuizPageProps {
   quiz: UseQuizResult
+  onOpenCodingChallenge?: () => void
+  signedInAs?: string | null
+  onSignOut?: () => void
 }
 
-export function QuizPage({ quiz }: QuizPageProps) {
+export function QuizPage({ quiz, onOpenCodingChallenge, signedInAs, onSignOut }: QuizPageProps) {
   const [showResetConfirm, setShowResetConfirm] = useState(false)
   const closeResetConfirm = useCallback(() => setShowResetConfirm(false), [])
   const {
@@ -23,11 +26,13 @@ export function QuizPage({ quiz }: QuizPageProps) {
     currentAnswer,
     sectionBreak,
     score,
+    stageResults,
     nextLabel,
     selectOption,
     submitRiddle,
     advance,
     enterNextSection,
+    retrySection,
   } = quiz
 
   if (!session) return null
@@ -42,6 +47,10 @@ export function QuizPage({ quiz }: QuizPageProps) {
         teamName={session.profile.teamName}
         score={score}
         onReset={() => setShowResetConfirm(true)}
+        onExitToHome={quiz.exitToHome}
+        onOpenCodingChallenge={onOpenCodingChallenge}
+        signedInAs={signedInAs}
+        onSignOut={onSignOut}
       />
 
       <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 sm:py-8 lg:py-10">
@@ -49,7 +58,9 @@ export function QuizPage({ quiz }: QuizPageProps) {
           <SectionBreak
             completedSection={sectionBreak}
             score={score}
+            stageResults={stageResults}
             onContinue={enterNextSection}
+            onRetry={retrySection}
           />
         ) : (
           <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_296px] lg:gap-7">
