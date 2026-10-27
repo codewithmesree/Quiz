@@ -7,7 +7,6 @@ interface QuizHeaderProps {
   score: ScoreSummary
   onReset: () => void
   onExitToHome?: () => void
-  onOpenCodingChallenge?: () => void
   /** Display name or email of the signed-in user, if any. */
   signedInAs?: string | null
   /** Called when the user clicks Sign out in the header. */
@@ -19,7 +18,6 @@ export function QuizHeader({
   score,
   onReset,
   onExitToHome,
-  onOpenCodingChallenge,
   signedInAs,
   onSignOut,
 }: QuizHeaderProps) {
@@ -48,29 +46,16 @@ export function QuizHeader({
           <div
             className="flex items-center gap-2 rounded-full border border-hwi/25 bg-hwi/[0.07] px-3 py-1.5"
             data-testid="live-score"
-            aria-label={`Live score: ${score.totalCorrect} of ${score.totalQuestions} points`}
+            aria-label={`Live score: ${score.totalCorrect} points`}
           >
             <Lock className="size-3 text-hwi" aria-hidden="true" />
             <span className="font-display text-sm font-bold tabular-nums text-white">
               {score.totalCorrect}
-              <span className="text-muted/70">/{score.totalQuestions}</span>
             </span>
-            <span className="hidden text-[9px] font-semibold uppercase tracking-[0.18em] text-hwi sm:inline">
+            <span className="text-[9px] font-semibold uppercase tracking-[0.18em] text-hwi">
               pts
             </span>
           </div>
-          {onOpenCodingChallenge && (
-            <button
-              type="button"
-              onClick={onOpenCodingChallenge}
-              title="Open Python Coding Challenge"
-              aria-label="Open Python Coding Challenge"
-              className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-hwi/30 bg-hwi/[0.08] px-2.5 py-1.5 text-[9px] font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:border-hwi/60 hover:bg-hwi/20 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-hwi"
-            >
-              <span className="size-1.5 rounded-full bg-hwi animate-pulse" />
-              <span className="hidden sm:inline">Python Lab</span>
-            </button>
-          )}
           {onExitToHome && (
             <button
               type="button"
@@ -120,8 +105,7 @@ export function QuizHeader({
             Team <span className="text-white/85">{teamName}</span>
           </p>
           <p className="shrink-0 text-[10px] font-medium uppercase tracking-[0.18em] text-muted/60">
-            Answered <span className="text-white/85">{score.totalAnswered}</span> /{' '}
-            {score.totalQuestions}
+            Answered <span className="text-white/85">{score.totalAnswered}</span>
           </p>
         </div>
       </div>

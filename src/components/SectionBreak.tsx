@@ -107,7 +107,7 @@ export function SectionBreak({
 
             {attempts > 1 && (
               <p className="mt-3 text-[9px] font-medium uppercase tracking-[0.16em] text-muted/40">
-                Attempt #{attempts} — Questions reshuffled
+                Attempt #{attempts}
               </p>
             )}
 
@@ -116,7 +116,7 @@ export function SectionBreak({
                 Retry rules
               </p>
               <p className="mt-1 text-xs leading-relaxed text-muted/65">
-                A new set of questions from the same pool will be presented. Your progress in other
+                Retake this section to reach the qualifying score. Your progress in other
                 completed sections is preserved. Keep going — no penalties apply.
               </p>
             </div>
@@ -177,8 +177,8 @@ export function SectionBreak({
               </p>
               <p className="mt-1 font-display text-2xl font-bold tabular-nums text-white">
                 {score.totalCorrect}
-                <span className="text-sm font-medium text-muted/50">
-                  /{score.totalQuestions}
+                <span className="ml-1 text-sm font-medium text-muted/50">
+                  pts
                 </span>
               </p>
             </div>
@@ -191,7 +191,7 @@ export function SectionBreak({
               label="Quiz progress"
             />
             <p className="mt-2 text-[10px] font-medium uppercase tracking-[0.16em] text-muted/45">
-              {score.totalAnswered} of {score.totalQuestions} questions answered
+              {score.totalAnswered} questions answered
             </p>
           </div>
 

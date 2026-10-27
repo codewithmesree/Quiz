@@ -10,12 +10,11 @@ import { SessionSidebar } from '../components/SessionSidebar'
 
 interface QuizPageProps {
   quiz: UseQuizResult
-  onOpenCodingChallenge?: () => void
   signedInAs?: string | null
   onSignOut?: () => void
 }
 
-export function QuizPage({ quiz, onOpenCodingChallenge, signedInAs, onSignOut }: QuizPageProps) {
+export function QuizPage({ quiz, signedInAs, onSignOut }: QuizPageProps) {
   const [showResetConfirm, setShowResetConfirm] = useState(false)
   const closeResetConfirm = useCallback(() => setShowResetConfirm(false), [])
   const {
@@ -48,7 +47,6 @@ export function QuizPage({ quiz, onOpenCodingChallenge, signedInAs, onSignOut }:
         score={score}
         onReset={() => setShowResetConfirm(true)}
         onExitToHome={quiz.exitToHome}
-        onOpenCodingChallenge={onOpenCodingChallenge}
         signedInAs={signedInAs}
         onSignOut={onSignOut}
       />
@@ -79,7 +77,7 @@ export function QuizPage({ quiz, onOpenCodingChallenge, signedInAs, onSignOut }:
                     Question {currentIndex + 1} of {totalInSection}
                   </p>
                   <p className="mt-1 font-display text-[11px] font-medium tabular-nums text-muted/45">
-                    {score.totalAnswered} / {score.totalQuestions} answered
+                    {score.totalAnswered} answered
                   </p>
                 </div>
               </div>
@@ -131,7 +129,7 @@ export function QuizPage({ quiz, onOpenCodingChallenge, signedInAs, onSignOut }:
       <ConfirmDialog
         open={showResetConfirm}
         title="Reset this quiz?"
-        description="Every answer, point, and question drawn in this session will be cleared. This cannot be undone."
+        description="All answers and points recorded in this session will be cleared. This cannot be undone."
         confirmLabel="Reset quiz"
         onConfirm={() => {
           setShowResetConfirm(false)

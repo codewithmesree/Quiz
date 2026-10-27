@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { ArrowLeft, Loader, Trophy } from 'lucide-react'
 import { BrandLogo } from '../components/BrandLogo'
 import { Button } from '../components/Button'
-import { TOTAL_QUESTIONS } from '../data/questions'
 import type { CloudTeamRecord } from '../services/firebaseSync'
 import { subscribeToCloudLeaderboard } from '../services/firebaseSync'
 
@@ -118,7 +117,7 @@ export function LeaderboardPage({ onBack, backLabel = 'Back to Results' }: Leade
                       {team.teamName}
                     </span>
                     <span className="text-right font-display text-xs font-semibold tabular-nums text-white/80 sm:text-sm">
-                      {team.totalCorrect}/{TOTAL_QUESTIONS}
+                      {team.totalCorrect}
                     </span>
                     <span className="text-right font-display text-xs font-bold tabular-nums text-hwi sm:text-sm">
                       {team.totalPoints} pts

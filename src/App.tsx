@@ -264,9 +264,6 @@ function App() {
         ) : (
           <QuizPage
             quiz={quiz}
-            onOpenCodingChallenge={
-              unlockedCodingStages.length > 0 ? openCodingChallenge : undefined
-            }
             signedInAs={signedInAs}
             onSignOut={() => void handleSignOut()}
           />

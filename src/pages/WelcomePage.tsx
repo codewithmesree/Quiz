@@ -9,7 +9,7 @@ import {
   signOut,
 } from 'firebase/auth'
 import type { User } from 'firebase/auth'
-import { QUIZ_SECTIONS, TOTAL_QUESTIONS } from '../data/questions'
+import { QUIZ_SECTIONS } from '../data/questions'
 import type { PlayerProfile } from '../types/quiz'
 import type { QuizState } from '../types/quiz'
 import { BrandLogo } from '../components/BrandLogo'
@@ -20,6 +20,11 @@ import {
   fetchTeamProgressFromCloud,
   saveAccountTeamProfile,
 } from '../services/firebaseSync'
+import { sectionToStageId } from '../config/progressionConfig'
+import {
+  evaluateQuizSection,
+  type StageResultMap,
+} from '../utils/progressionEngine'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -53,13 +58,37 @@ function buildRestoredState(sessionData: string, record: {
     const section = record.currentSection as 1 | 2 | 3
     if (section !== 1 && section !== 2 && section !== 3) return null
     const phase = record.phase === 'results' ? 'results' : 'quiz'
+
+    // Re-derive stage pass/fail from the restored session's answers so the
+    // progression gate (which unlocks the coding challenge) is correct.
+    // We only evaluate sections that have all their questions answered.
+    const stageResults: StageResultMap = {}
+    const sectionsToCheck: Array<1 | 2 | 3> = [1, 2, 3]
+    for (const sId of sectionsToCheck) {
+      const questions = sId === 1
+        ? session.section1
+        : sId === 2 ? session.section2 : session.section3
+      if (!Array.isArray(questions) || questions.length === 0) continue
+      const allAnswered = questions.every(
+        (q: { id: string }) => Boolean(session.answers?.[q.id]),
+      )
+      if (!allAnswered) continue
+      const result = evaluateQuizSection(session, sId)
+      stageResults[sectionToStageId(sId)] = {
+        passed: result.passed,
+        score: result.score,
+        total: result.total,
+        attempts: 1,
+      }
+    }
+
     return {
       phase,
       session,
       currentSection: section,
       currentIndex: record.currentIndex,
       sectionBreak: record.sectionBreak as null | 1 | 2 | 3,
-      stageResults: {},
+      stageResults,
     }
   } catch {
     return null
@@ -442,7 +471,7 @@ export function WelcomePage({
                 ))}
               </ol>
               <p className="mt-5 text-[9px] font-semibold uppercase tracking-[0.18em] text-white/35">
-                {QUIZ_SECTIONS.length} sections · {TOTAL_QUESTIONS} questions
+                {QUIZ_SECTIONS.length} sections
               </p>
               <Button onClick={() => onStart({ teamName: teamName.trim() })} size="lg" className="mt-6 w-full">
                 Get started <ArrowRight className="size-4" />

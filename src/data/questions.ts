@@ -359,7 +359,7 @@ export const QUIZ_SECTIONS: readonly SectionMeta[] = [
     name: 'Computer Knowledge',
     shortName: 'Knowledge',
     description:
-      'Five randomized fundamentals. One submission per question — choose carefully.',
+      'Five core fundamentals. One submission per question — choose carefully.',
     count: 5,
     type: 'mcq',
   },
@@ -369,7 +369,7 @@ export const QUIZ_SECTIONS: readonly SectionMeta[] = [
     name: 'Advanced Computer Knowledge',
     shortName: 'Advanced',
     description:
-      'Five randomized questions on networks, hardware and everyday computing.',
+      'Five questions on networks, hardware and everyday computing.',
     count: 5,
     type: 'mcq',
   },
@@ -379,7 +379,7 @@ export const QUIZ_SECTIONS: readonly SectionMeta[] = [
     name: 'Computer Riddles',
     shortName: 'Riddles',
     description:
-      'All four riddles. Type your answer, submit once, and lock it in.',
+      'Four riddles. Type your answer, submit once, and lock it in.',
     count: 4,
     type: 'riddle',
   },

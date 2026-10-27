@@ -47,9 +47,6 @@ export function SessionSidebar({
           <span className="font-display text-5xl font-bold leading-none tabular-nums text-white">
             {score.totalCorrect}
           </span>
-          <span className="pb-1 font-display text-lg font-medium text-muted/60">
-            / {score.totalQuestions}
-          </span>
           <span className="mb-1.5 ml-auto rounded-md border border-white/10 bg-black/30 px-2 py-1 text-[9px] font-semibold uppercase tracking-[0.16em] text-muted">
             pts
           </span>

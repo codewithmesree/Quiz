@@ -6,7 +6,7 @@ interface ScoreRingProps {
   total: number
 }
 
-export function ScoreRing({ percentage, correct, total }: ScoreRingProps) {
+export function ScoreRing({ percentage, correct }: ScoreRingProps) {
   const gradientId = useId()
   const radius = 82
   const circumference = 2 * Math.PI * radius
@@ -17,7 +17,7 @@ export function ScoreRing({ percentage, correct, total }: ScoreRingProps) {
     <div
       className="relative mx-auto flex size-52 items-center justify-center sm:size-56"
       role="img"
-      aria-label={`Final score: ${correct} out of ${total}, ${boundedPercentage} percent`}
+      aria-label={`Final score: ${correct} points, ${boundedPercentage} percent`}
     >
       <svg
         viewBox="0 0 200 200"
@@ -66,7 +66,7 @@ export function ScoreRing({ percentage, correct, total }: ScoreRingProps) {
           Final score
         </p>
         <p className="mt-1 font-display text-xs font-medium tabular-nums text-muted/60">
-          {correct} / {total} points
+          {correct} points
         </p>
       </div>
     </div>

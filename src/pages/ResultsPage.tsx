@@ -115,7 +115,7 @@ export function ResultsPage({
                 {session.profile.teamName}
               </h1>
               <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted/70">
-                Fourteen questions. Three sections. Every answer sealed. Here is
+                Three sections. Every answer sealed. Here is
                 how the session finished.
               </p>
 
@@ -128,7 +128,7 @@ export function ResultsPage({
                 </span>
                 <span className="flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.14em] text-muted/50">
                   <Users className="size-3.5 text-muted/40" aria-hidden="true" />
-                  14 questions · 3 sections
+                  3 sections
                 </span>
               </div>
 
@@ -190,10 +190,10 @@ export function ResultsPage({
                 />
                 <div className="mt-3 flex items-center justify-between border-t border-white/[0.06] px-2 pt-3">
                   <span className="text-[9px] font-semibold uppercase tracking-[0.16em] text-muted/50">
-                    Maximum
+                    Earned
                   </span>
                   <span className="font-display text-xs font-semibold tabular-nums text-white/75">
-                    {score.totalQuestions} pts
+                    {score.totalCorrect} pts
                   </span>
                 </div>
               </div>
@@ -267,11 +267,11 @@ export function ResultsPage({
             <div className="flex items-center gap-1.5 text-muted/60">
               <Award className="size-3" aria-hidden="true" />
               <p className="text-[8px] font-bold uppercase tracking-[0.18em]">
-                Out of
+                Answered
               </p>
             </div>
             <p className="mt-1.5 font-display text-2xl font-bold tabular-nums text-white">
-              {score.totalQuestions}
+              {score.totalAnswered}
             </p>
           </div>
         </section>
@@ -290,7 +290,7 @@ export function ResultsPage({
               </h2>
             </div>
             <p className="pb-1 text-[9px] font-semibold uppercase tracking-[0.16em] text-muted/40">
-              14 points available
+              Across all sections
             </p>
           </div>
 
