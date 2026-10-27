@@ -359,11 +359,9 @@ export function useQuiz(codingStagesCompleted = 0): UseQuizResult {
     () => {
       const stored = loadQuizState()
       if (stored && stored.session) {
-        return {
-          ...stored,
-          phase: 'welcome' as const,
-          savedPhase: stored.phase,
-        }
+        // The stored phase is already the correct phase to resume to
+        // (persistence layer converts 'welcome' to savedPhase before saving)
+        return stored
       }
       return INITIAL_STATE
     },
