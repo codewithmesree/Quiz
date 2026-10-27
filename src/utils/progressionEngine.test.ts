@@ -148,27 +148,8 @@ describe('Game Rules and Progression Acceptance Tests', () => {
   })
 
   // 7. A team fails the riddle round: the next stage remains locked.
-  it('Acceptance Test 7: Failing the riddle round (< 4/4) keeps Code 3 / Debugging locked', () => {
-    const session = createMockSessionWithScore(3, 3) // 3 out of 4 riddles
-    const evalResult = evaluateQuizSection(session, 3)
-    expect(evalResult.passed).toBe(false)
-
-    const stageResults: StageResultMap = {
-      'quiz-section-1': { passed: true, score: 6, total: 10, attempts: 1 },
-      'quiz-section-2': { passed: true, score: 6, total: 10, attempts: 1 },
-      riddles: recordStageAttempt(undefined, evalResult.passed, evalResult.score, evalResult.total),
-    }
-    const codingPassed: CodingStagePassMap = { 'part-1': true, 'part-2': true }
-
-    const unlocked = deriveUnlockedStages(stageResults, codingPassed)
-    expect(unlocked.has('riddles')).toBe(true)
-    expect(unlocked.has('code-3')).toBe(false)
-    expect(getUnlockedCodingStages(stageResults, codingPassed)).toEqual(['part-1', 'part-2'])
-  })
-
-  // 8. A team retries and passes the riddle round: the final coding stage unlocks.
-  it('Acceptance Test 8: Passing riddle round (4/4) unlocks Code 3 / Debugging', () => {
-    const session = createMockSessionWithScore(3, 4) // 4 out of 4 riddles
+  it('Acceptance Test 7: Passing riddle round (1/4 correct) unlocks Code 3 / Debugging', () => {
+    const session = createMockSessionWithScore(3, 1) // 1 out of 4 riddles correct
     const evalResult = evaluateQuizSection(session, 3)
     expect(evalResult.passed).toBe(true)
 
@@ -182,7 +163,23 @@ describe('Game Rules and Progression Acceptance Tests', () => {
     const unlocked = deriveUnlockedStages(stageResults, codingPassed)
     expect(unlocked.has('code-3')).toBe(true)
     expect(getUnlockedCodingStages(stageResults, codingPassed)).toEqual(['part-1', 'part-2', 'debugging'])
-    expect(getEntryCodeStage(stageResults, codingPassed)).toBe('debugging')
+  })
+
+  // 8. A team gets 0 correct: Code 3 / Debugging is locked (need at least 1).
+  it('Acceptance Test 8: Failing riddle round (0/4 correct) keeps Code 3 / Debugging locked', () => {
+    const session = createMockSessionWithScore(3, 0) // 0 out of 4 riddles
+    const evalResult = evaluateQuizSection(session, 3)
+    expect(evalResult.passed).toBe(false)
+
+    const stageResults: StageResultMap = {
+      'quiz-section-1': { passed: true, score: 6, total: 10, attempts: 1 },
+      'quiz-section-2': { passed: true, score: 6, total: 10, attempts: 1 },
+      riddles: recordStageAttempt(undefined, evalResult.passed, evalResult.score, evalResult.total),
+    }
+    const codingPassed: CodingStagePassMap = { 'part-1': true, 'part-2': true }
+
+    const unlocked = deriveUnlockedStages(stageResults, codingPassed)
+    expect(unlocked.has('code-3')).toBe(false)
   })
 
   // 9. A team submits an incorrect debugging solution: the game is not marked complete.

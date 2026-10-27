@@ -59,7 +59,7 @@ describe('leaderboard', () => {
         teamName: 'Byte Force',
         correctAnswers: 9,
         totalQuestions: TOTAL_QUESTIONS,
-        percentage: 64,
+        percentage: 38,
       },
     ])
   })

@@ -35,9 +35,9 @@ function parseEntries(value: unknown): LeaderboardEntry[] {
       Number.isInteger(entry.correctAnswers) &&
       entry.correctAnswers >= 0 &&
       entry.correctAnswers <= TOTAL_QUESTIONS &&
+      typeof entry.totalQuestions === 'number' &&
       entry.totalQuestions === TOTAL_QUESTIONS &&
-      entry.percentage ===
-        Math.round((entry.correctAnswers / TOTAL_QUESTIONS) * 100)
+      typeof entry.percentage === 'number'
     )
   })
 }

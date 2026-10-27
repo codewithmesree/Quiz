@@ -8,10 +8,18 @@ describe('CodingChallengePage', () => {
     window.localStorage.clear()
   })
 
-  it('renders the header, problem panel, editor, and terminal', () => {
+  it('renders the header, problem panel, editor, and terminal', async () => {
+    const user = userEvent.setup()
     render(<CodingChallengePage onBackToQuiz={vi.fn()} teamName="Byte Force" />)
 
-    // Header & Branding
+    // First see the CodingInstructions page
+    expect(screen.getByText(/ready to code?/i)).toBeInTheDocument()
+    
+    // Click "Start Coding" button to proceed
+    const startCodingBtn = screen.getByRole('button', { name: /start coding/i })
+    await user.click(startCodingBtn)
+
+    // Now Header & Branding should be visible
     expect(screen.getByText(/python lab/i)).toBeInTheDocument()
     expect(screen.getByText('Byte Force')).toBeInTheDocument()
 
@@ -40,6 +48,10 @@ describe('CodingChallengePage', () => {
     const user = userEvent.setup()
     render(<CodingChallengePage onBackToQuiz={vi.fn()} />)
 
+    // Click "Start Coding" to proceed to editor
+    const startCodingBtn = screen.getByRole('button', { name: /start coding/i })
+    await user.click(startCodingBtn)
+
     const runBtn = screen.getByRole('button', { name: /run python code/i })
     await user.click(runBtn)
 
@@ -53,6 +65,10 @@ describe('CodingChallengePage', () => {
   it('submits solution and validates stage completion when user types code', async () => {
     const user = userEvent.setup()
     render(<CodingChallengePage onBackToQuiz={vi.fn()} />)
+
+    // Click "Start Coding" to proceed to editor
+    const startCodingBtn = screen.getByRole('button', { name: /start coding/i })
+    await user.click(startCodingBtn)
 
     const editor = screen.getByTestId('code-editor-textarea')
     fireEvent.change(editor, {
@@ -80,6 +96,10 @@ if val.isdigit():
     const user = userEvent.setup()
     const handleBack = vi.fn()
     render(<CodingChallengePage onBackToQuiz={handleBack} />)
+
+    // Click "Start Coding" to proceed to editor
+    const startCodingBtn = screen.getByRole('button', { name: /start coding/i })
+    await user.click(startCodingBtn)
 
     const backBtn = screen.getByRole('button', {
       name: /return to quiz arena/i,

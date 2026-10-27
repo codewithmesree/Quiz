@@ -30,23 +30,43 @@ const EXPECTED_KEYS: Record<string, MCQOptionId> = {
   q18: 'B',
   q19: 'B',
   q20: 'B',
+  q21: 'C',
+  q22: 'B',
+  q23: 'B',
+  q24: 'A',
+  q25: 'C',
+  q26: 'B',
+  q27: 'B',
+  q28: 'C',
+  q29: 'C',
+  q30: 'C',
+  q31: 'B',
 }
 
 describe('question bank', () => {
-  it('contains exactly the 20 source MCQs and 4 source riddles', () => {
-    expect(ALL_MCQ_QUESTIONS).toHaveLength(20)
+  it('contains exactly the 31 MCQs and 4 source riddles', () => {
+    expect(ALL_MCQ_QUESTIONS).toHaveLength(31)
     expect(RIDDLES).toHaveLength(4)
-    expect(TOTAL_QUESTIONS).toBe(24)
-    expect(QUIZ_SECTIONS.map((section) => section.count)).toEqual([10, 10, 4])
+    expect(TOTAL_QUESTIONS).toBe(35)
+    expect(QUIZ_SECTIONS.map((section) => section.count)).toEqual([15, 16, 4])
   })
 
-  it('keeps Q1–Q10 in section 1 and Q11–Q20 in section 2', () => {
-    expect(SECTION_1_POOL.map((question) => question.id)).toEqual(
+  it('distributes questions: Q1–Q10 & Q21–Q25 in section 1, Q11–Q20 & Q26–Q31 in section 2', () => {
+    const section1Ids = SECTION_1_POOL.map((question) => question.id)
+    const section2Ids = SECTION_2_POOL.map((question) => question.id)
+    
+    // Section 1 should have q1-q10 then q21-q25 (15 total)
+    expect(section1Ids.slice(0, 10)).toEqual(
       Array.from({ length: 10 }, (_, index) => `q${index + 1}`),
     )
-    expect(SECTION_2_POOL.map((question) => question.id)).toEqual(
+    expect(section1Ids.slice(10, 15)).toEqual(['q21', 'q22', 'q23', 'q24', 'q25'])
+    
+    // Section 2 should have q11-q20 then q26-q31 (16 total)
+    expect(section2Ids.slice(0, 10)).toEqual(
       Array.from({ length: 10 }, (_, index) => `q${index + 11}`),
     )
+    expect(section2Ids.slice(10, 16)).toEqual(['q26', 'q27', 'q28', 'q29', 'q30', 'q31'])
+    
     expect(SECTION_1_POOL.every((question) => question.section === 1)).toBe(true)
     expect(SECTION_2_POOL.every((question) => question.section === 2)).toBe(true)
   })

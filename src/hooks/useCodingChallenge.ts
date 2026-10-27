@@ -30,6 +30,7 @@ export interface UseCodingChallengeResult {
   validationResult: ValidationResult | null
   isValidating: boolean
   isNextStageUnlocked: boolean
+  isTimeExpired: boolean // New: whether coding timer has expired
   setCode: (code: string) => void
   selectStage: (stageId: CodingStageId) => boolean
   resetCurrentStageCode: () => void
@@ -77,9 +78,10 @@ export function useCodingChallenge(
     )
   }, [challengeState.unlockedStages, externalUnlockedStages])
 
-  const code =
-    challengeState.stageCodes[challengeState.currentStageId] ??
-    currentStage.starterCode
+  // Check if time has expired
+  const isTimeExpired = useMemo(() => {
+    return challengeState.timerStatus === 'expired'
+  }, [challengeState.timerStatus])
 
   // PythonRunner instance ref
   const runnerRef = useRef<PythonRunner | null>(null)
@@ -149,11 +151,13 @@ export function useCodingChallenge(
     setTerminalLines([])
   }, [])
 
+  const currentCode = challengeState.stageCodes[challengeState.currentStageId] || ''
+
   const runCode = useCallback(async () => {
     if (!runnerRef.current) return
     setValidationResult(null)
-    await runnerRef.current.run(code)
-  }, [code])
+    await runnerRef.current.run(currentCode)
+  }, [currentCode])
 
   const sendInput = useCallback((input: string) => {
     if (!runnerRef.current) return
@@ -166,10 +170,19 @@ export function useCodingChallenge(
   }, [])
 
   const submitSolution = useCallback(async (): Promise<ValidationResult> => {
+    // Check deadline before allowing submission
+    if (isTimeExpired) {
+      return {
+        success: false,
+        message: 'Time has expired. You can no longer submit code.',
+        error: 'DEADLINE_EXCEEDED',
+      }
+    }
+
     setIsValidating(true)
     try {
       const validator = currentStage.validate
-      const result = await validator(code, terminalLines)
+      const result = await validator(currentCode, terminalLines)
       setValidationResult(result)
 
       if (result.success) {
@@ -207,7 +220,7 @@ export function useCodingChallenge(
     } finally {
       setIsValidating(false)
     }
-  }, [currentStage, code, terminalLines])
+  }, [currentStage, currentCode, terminalLines, isTimeExpired])
 
   const clearValidationResult = useCallback(() => {
     setValidationResult(null)
@@ -240,7 +253,7 @@ export function useCodingChallenge(
   return {
     currentStage,
     currentStageId: challengeState.currentStageId,
-    code,
+    code: currentCode,
     stageCodes: challengeState.stageCodes,
     completedStages: challengeState.completedStages,
     unlockedStages: effectiveUnlockedStages,
@@ -249,6 +262,7 @@ export function useCodingChallenge(
     validationResult,
     isValidating,
     isNextStageUnlocked,
+    isTimeExpired,
     setCode,
     selectStage,
     resetCurrentStageCode,

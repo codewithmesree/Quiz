@@ -86,7 +86,7 @@ export function MCQCard({
     >
       <div className="h-px w-full bg-gradient-to-r from-transparent via-hwi/60 to-transparent" />
 
-      <div className="p-5 sm:p-7 lg:p-8">
+      <div className="p-4 sm:p-5 lg:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2 rounded-full border border-hwi/20 bg-hwi/[0.05] px-3 py-1.5">
             <SectionIcon section={section.id} className="text-hwi" />

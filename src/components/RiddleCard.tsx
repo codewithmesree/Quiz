@@ -22,6 +22,7 @@ interface RiddleCardProps {
   nextLabel: string
   onSubmit: (text: string) => void
   onAdvance: () => void
+  showAnswerKey?: boolean // Show the accepted answer only after all riddles answered
 }
 
 export function RiddleCard({
@@ -33,6 +34,7 @@ export function RiddleCard({
   nextLabel,
   onSubmit,
   onAdvance,
+  showAnswerKey = false,
 }: RiddleCardProps) {
   const inputId = useId()
   const feedbackId = useId()
@@ -66,7 +68,7 @@ export function RiddleCard({
     >
       <div className="h-px w-full bg-gradient-to-r from-transparent via-hwi/60 to-transparent" />
 
-      <div className="p-5 sm:p-7 lg:p-8">
+      <div className="p-4 sm:p-5 lg:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2 rounded-full border border-hwi/20 bg-hwi/[0.05] px-3 py-1.5">
             <SectionIcon section={section.id} className="text-hwi" />
@@ -206,22 +208,24 @@ export function RiddleCard({
                   <p className="mt-1 text-xs leading-relaxed text-muted/80">
                     {answer.correct
                       ? 'Locked in. You earned 1 point for this riddle.'
-                      : 'Your answer has been locked. Review the accepted answer below.'}
+                      : 'Your answer has been locked. Answers will be revealed after you complete all riddles.'}
                   </p>
-                  <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px]">
-                    <span className="text-muted/60">
-                      Your answer:{' '}
-                      <span className="font-medium text-white/80">
-                        {answer.submitted}
+                  {showAnswerKey && (
+                    <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px]">
+                      <span className="text-muted/60">
+                        Your answer:{' '}
+                        <span className="font-medium text-white/80">
+                          {answer.submitted}
+                        </span>
                       </span>
-                    </span>
-                    <span className="text-muted/60">
-                      Accepted answer:{' '}
-                      <span className="font-semibold text-emerald-300">
-                        {answer.correctAnswer}
+                      <span className="text-muted/60">
+                        Accepted answer:{' '}
+                        <span className="font-semibold text-emerald-300">
+                          {answer.correctAnswer}
+                        </span>
                       </span>
-                    </span>
-                  </div>
+                    </div>
+                  )}
                 </div>
                 <span
                   className={cn(

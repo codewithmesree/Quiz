@@ -49,7 +49,7 @@ export function LobbyPage({ teamName, sessionId, teams, onRegister, onBackToHome
           style={{ animationDelay: '100ms' }}
         >
           <div className="h-1 w-full bg-gradient-to-r from-hwi via-hwi/40 to-transparent" />
-          <div className="p-8">
+          <div className="p-6">
             <div className="flex flex-col items-center gap-3 text-center">
               {/* Pulsing waiting indicator */}
               <div className="relative">

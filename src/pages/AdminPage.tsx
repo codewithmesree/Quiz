@@ -5,6 +5,7 @@ import {
   ArrowLeft,
   ArrowRight,
   ChevronRight,
+  Clock,
   Code2,
   Flag,
   Info,
@@ -114,11 +115,45 @@ function PhaseIndicator({ phase }: { phase: GamePhase }) {
   )
 }
 
+function getTeamTimerInfo(sessionId: string): { status: string; remainingMs: number } | null {
+  try {
+    const storageKey = `hwi-coding-challenge-state-v2:${sessionId}`
+    const raw = localStorage.getItem(storageKey)
+    if (!raw) return null
+    
+    const state = JSON.parse(raw) as {
+      timerStatus?: string
+      timerDeadline?: number
+    }
+    
+    if (!state.timerDeadline) return null
+    
+    const now = Date.now()
+    const remainingMs = state.timerDeadline - now
+    
+    return {
+      status: state.timerStatus || 'not_started',
+      remainingMs: Math.max(0, remainingMs),
+    }
+  } catch {
+    return null
+  }
+}
+
+function formatRemainingTime(ms: number): string {
+  const totalSeconds = Math.floor(ms / 1000)
+  const minutes = Math.floor(totalSeconds / 60)
+  const seconds = totalSeconds % 60
+  return `${minutes}:${String(seconds).padStart(2, '0')}`
+}
+
 function LiveTeamRow({ team, score, rank }: {
   team: { teamName: string; sessionId: string }
   score?: { correctAnswers: number; totalAnswered: number; codingStagesCompleted: number }
   rank: number
 }) {
+  const timerInfo = getTeamTimerInfo(team.sessionId)
+  
   return (
     <div className="flex items-center gap-3 rounded-lg border border-white/[0.06] bg-white/[0.02] px-4 py-3 transition-colors hover:border-hwi/20 hover:bg-hwi/[0.03]">
       <span className="w-7 font-display text-sm font-bold tabular-nums text-hwi">
@@ -134,6 +169,22 @@ function LiveTeamRow({ team, score, rank }: {
             <span className="flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-400">
               <Code2 className="size-2.5" />
               {score.codingStagesCompleted}/3
+            </span>
+          )}
+          {timerInfo && (
+            <span className={cn(
+              'flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider',
+              timerInfo.status === 'expired'
+                ? 'border border-red-500/30 bg-red-500/10 text-red-400'
+                : timerInfo.status === 'running'
+                ? 'border border-amber-500/30 bg-amber-500/10 text-amber-400'
+                : 'border border-white/[0.1] bg-white/[0.05] text-white/60'
+            )}>
+              <Clock className="size-2.5" />
+              {timerInfo.status === 'expired' 
+                ? 'Time Expired'
+                : formatRemainingTime(timerInfo.remainingMs)
+              }
             </span>
           )}
         </>

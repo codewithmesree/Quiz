@@ -33,13 +33,14 @@ export function computeScoreSummary(session: QuizSession): ScoreSummary {
   ].filter((question) => Boolean(session.answers[question.id])).length
 
   const boundedCorrect = Math.min(totalCorrect, TOTAL_QUESTIONS)
+  const totalQuestionsInSession = session.section1.length + session.section2.length + session.section3.length
 
   return {
     totalCorrect: boundedCorrect,
     totalIncorrect: Math.max(totalAnswered - boundedCorrect, 0),
     totalAnswered,
     totalQuestions: TOTAL_QUESTIONS,
-    percentage: Math.round((boundedCorrect / TOTAL_QUESTIONS) * 100),
+    percentage: totalQuestionsInSession > 0 ? Math.round((boundedCorrect / totalQuestionsInSession) * 100) : 0,
     sections,
   }
 }

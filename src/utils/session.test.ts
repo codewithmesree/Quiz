@@ -7,9 +7,10 @@ const PROFILE = {
 }
 
 describe('quiz session creation', () => {
-  it('creates a stable session with ten unique questions per MCQ section', () => {
+  it('creates a stable session with ten unique questions per MCQ section and 4 riddles in random order', () => {
     const sectionOneIds = new Set(SECTION_1_POOL.map((question) => question.id))
     const sectionTwoIds = new Set(SECTION_2_POOL.map((question) => question.id))
+    const riddleIds = new Set(['r1', 'r2', 'r3', 'r4'])
 
     for (let run = 0; run < 30; run += 1) {
       const session = createQuizSession(PROFILE)
@@ -28,12 +29,10 @@ describe('quiz session creation', () => {
       expect(
         session.section2.every((question) => sectionTwoIds.has(question.id)),
       ).toBe(true)
-      expect(session.section3.map((riddle) => riddle.id)).toEqual([
-        'r1',
-        'r2',
-        'r3',
-        'r4',
-      ])
+      // Riddles are shuffled, so just check they contain all 4 riddles
+      const riddleSessionIds = new Set(session.section3.map((riddle) => riddle.id))
+      expect(riddleSessionIds.size).toBe(4)
+      expect(riddleSessionIds).toEqual(riddleIds)
     }
   })
 
@@ -45,8 +44,8 @@ describe('quiz session creation', () => {
 
   it('does not mutate the shared question pools', () => {
     createQuizSession(PROFILE)
-    expect(SECTION_1_POOL).toHaveLength(10)
-    expect(SECTION_2_POOL).toHaveLength(10)
+    expect(SECTION_1_POOL).toHaveLength(15)
+    expect(SECTION_2_POOL).toHaveLength(16)
     expect(SECTION_1_POOL[0].id).toBe('q1')
     expect(SECTION_2_POOL[0].id).toBe('q11')
   })
@@ -55,7 +54,8 @@ describe('quiz session creation', () => {
     const session = createQuizSession(PROFILE)
     expect(getCurrentQuestion(session, 1, 0)?.id).toBe(session.section1[0].id)
     expect(getCurrentQuestion(session, 2, 4)?.id).toBe(session.section2[4].id)
-    expect(getCurrentQuestion(session, 3, 3)?.id).toBe('r4')
+    // Riddles are shuffled, so verify by index without assuming a specific riddle
+    expect(getCurrentQuestion(session, 3, 3)?.id).toBe(session.section3[3].id)
     expect(getCurrentQuestion(session, 1, 99)).toBeUndefined()
   })
 })

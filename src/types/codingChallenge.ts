@@ -74,6 +74,8 @@ export interface ChallengeDefinition {
   stages: readonly StageDefinition[]
 }
 
+export type TimerStatus = 'not_started' | 'running' | 'expired'
+
 export interface CodingChallengeState {
   version: number
   currentStageId: CodingStageId
@@ -81,4 +83,9 @@ export interface CodingChallengeState {
   completedStages: readonly CodingStageId[]
   unlockedStages: readonly CodingStageId[]
   lastUpdated: number
+  // Timer fields (40 minutes = 2400 seconds)
+  timerStartTime?: number // Unix timestamp when timer started
+  timerDeadline?: number // Unix timestamp when timer expires
+  timerStatus?: TimerStatus // 'not_started', 'running', 'expired'
+  instructionsViewed?: boolean // Whether coding instructions page has been shown
 }

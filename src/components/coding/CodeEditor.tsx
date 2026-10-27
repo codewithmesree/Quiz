@@ -10,6 +10,7 @@ interface CodeEditorProps {
   onChange: (value: string) => void
   onRun?: () => void
   onReset?: () => void
+  onFirstEdit?: () => void // Called on first actual code change
   readOnly?: boolean
   className?: string
 }
@@ -20,6 +21,7 @@ export function CodeEditor({
   onChange,
   onRun,
   onReset,
+  onFirstEdit,
   readOnly = false,
   className,
 }: CodeEditorProps) {
@@ -27,6 +29,7 @@ export function CodeEditor({
   const isJsdom =
     typeof window !== 'undefined' &&
     window.navigator.userAgent.includes('jsdom')
+  const originalCodeRef = useRef<string>(code) // Track initial code
 
   const handleEditorDidMount: OnMount = (editor, monaco) => {
     editorRef.current = editor
@@ -110,7 +113,15 @@ export function CodeEditor({
             language="python"
             theme="vs-dark"
             value={code}
-            onChange={(val) => onChange(val ?? '')}
+            onChange={(val) => {
+              const newCode = val ?? ''
+              // Detect first actual edit (code differs from original starter code)
+              if (onFirstEdit && newCode !== originalCodeRef.current && originalCodeRef.current.length > 0) {
+                originalCodeRef.current = '' // Mark as "first edit already happened"
+                onFirstEdit()
+              }
+              onChange(newCode)
+            }}
             onMount={handleEditorDidMount}
             options={{
               readOnly,
@@ -141,7 +152,15 @@ export function CodeEditor({
           <textarea
             data-testid="code-editor-textarea"
             value={code}
-            onChange={(e) => onChange(e.target.value)}
+            onChange={(e) => {
+              const newCode = e.target.value
+              // Detect first actual edit
+              if (onFirstEdit && newCode !== originalCodeRef.current && originalCodeRef.current.length > 0) {
+                originalCodeRef.current = ''
+                onFirstEdit()
+              }
+              onChange(newCode)
+            }}
             readOnly={readOnly}
             spellCheck={false}
             className="size-full resize-none border-none bg-[#0e0e0e] p-4 font-mono text-xs text-white focus:outline-none"

@@ -7,13 +7,19 @@ import {
 import { AppBackdrop } from '../components/AppBackdrop'
 import { CodeEditor } from '../components/coding/CodeEditor'
 import { CodingHeader } from '../components/coding/CodingHeader'
+import { CodingInstructions } from '../components/coding/CodingInstructions'
 import { ProblemPanel } from '../components/coding/ProblemPanel'
 import { TerminalPanel } from '../components/coding/TerminalPanel'
 import { ValidationBanner } from '../components/coding/ValidationBanner'
 import { useCodingChallenge } from '../hooks/useCodingChallenge'
+import { useTimerWithPersistence } from '../hooks/useTimerWithPersistence'
+import {
+  loadCodingChallengeState,
+  saveCodingChallengeState,
+} from '../utils/codingChallengePersistence'
 import { cn } from '../utils/cn'
 
-import type { CodingStageId } from '../types/codingChallenge'
+import type { CodingStageId, CodingChallengeState } from '../types/codingChallenge'
 
 interface CodingChallengePageProps {
   teamName?: string
@@ -34,9 +40,24 @@ export function CodingChallengePage({
   onStagePassed,
   externalUnlockedStages,
 }: CodingChallengePageProps) {
+  const [challengeState, setChallengeState] = useState<CodingChallengeState>(
+    () => loadCodingChallengeState(),
+  )
+  const [showInstructions, setShowInstructions] = useState(
+    !challengeState.instructionsViewed,
+  )
+
   const challenge = useCodingChallenge(externalUnlockedStages)
   const [isProblemCollapsed, setIsProblemCollapsed] = useState(false)
   const [mobileTab, setMobileTab] = useState<MobileTab>('editor')
+
+  const { timerState, startTimer } = useTimerWithPersistence(
+    challengeState,
+    (updated) => {
+      setChallengeState(updated)
+      saveCodingChallengeState(updated)
+    },
+  )
 
   const {
     currentStage,
@@ -49,6 +70,7 @@ export function CodingChallengePage({
     validationResult,
     isValidating,
     isNextStageUnlocked,
+    isTimeExpired,
     setCode,
     selectStage,
     resetCurrentStageCode,
@@ -61,6 +83,22 @@ export function CodingChallengePage({
     advanceToNextStage,
     resetAllProgress,
   } = challenge
+
+  // Handle instructions viewed
+  const handleStartCoding = () => {
+    const updated: CodingChallengeState = {
+      ...challengeState,
+      instructionsViewed: true,
+    }
+    setChallengeState(updated)
+    saveCodingChallengeState(updated)
+    setShowInstructions(false)
+  }
+
+  // Detect first code edit and start timer
+  const handleCodeFirstEdit = () => {
+    startTimer()
+  }
 
   // Notify parent when coding progress changes
   useEffect(() => {
@@ -81,6 +119,16 @@ export function CodingChallengePage({
     await runCode()
   }
 
+  // Show instructions page if not yet viewed
+  if (showInstructions) {
+    return (
+      <>
+        <AppBackdrop />
+        <CodingInstructions onStart={handleStartCoding} />
+      </>
+    )
+  }
+
   return (
     <div className="relative flex h-dvh flex-col overflow-hidden bg-[#050505] text-white">
       <AppBackdrop />
@@ -93,6 +141,8 @@ export function CodingChallengePage({
         unlockedStages={unlockedStages}
         executionStatus={executionStatus}
         isValidating={isValidating}
+        isTimeExpired={isTimeExpired}
+        timerDisplay={timerState}
         onSelectStage={selectStage}
         onRun={handleRun}
         onStop={stopExecution}
@@ -177,6 +227,8 @@ export function CodingChallengePage({
             onChange={setCode}
             onRun={handleRun}
             onReset={resetCurrentStageCode}
+            onFirstEdit={handleCodeFirstEdit}
+            readOnly={isTimeExpired}
           />
         </div>
 

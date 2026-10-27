@@ -137,6 +137,66 @@ export const SECTION_1_POOL: readonly MCQQuestion[] = [
     ],
     correctOptionId: 'A',
   },
+  {
+    id: 'q21',
+    section: 1,
+    prompt: 'Which of these would be the best example of a primary key in a student database?',
+    options: [
+      { id: 'A', text: "Student's name" },
+      { id: 'B', text: "Student's age" },
+      { id: 'C', text: "Student's unique ID" },
+      { id: 'D', text: "Student's department" },
+    ],
+    correctOptionId: 'C',
+  },
+  {
+    id: 'q22',
+    section: 1,
+    prompt: 'What does Git primarily help developers with?',
+    options: [
+      { id: 'A', text: 'Video editing' },
+      { id: 'B', text: 'Version control' },
+      { id: 'C', text: 'Database encryption' },
+      { id: 'D', text: 'Computer networking' },
+    ],
+    correctOptionId: 'B',
+  },
+  {
+    id: 'q23',
+    section: 1,
+    prompt: 'What is the main purpose of an API?',
+    options: [
+      { id: 'A', text: 'To physically connect computers' },
+      { id: 'B', text: 'To allow different software systems to communicate' },
+      { id: 'C', text: 'To increase processor speed' },
+      { id: 'D', text: 'To store user files' },
+    ],
+    correctOptionId: 'B',
+  },
+  {
+    id: 'q24',
+    section: 1,
+    prompt: 'Which company is behind the PlayStation gaming console?',
+    options: [
+      { id: 'A', text: 'Sony' },
+      { id: 'B', text: 'Nintendo' },
+      { id: 'C', text: 'Microsoft' },
+      { id: 'D', text: 'Sega' },
+    ],
+    correctOptionId: 'A',
+  },
+  {
+    id: 'q25',
+    section: 1,
+    prompt: 'Which company owns GitHub?',
+    options: [
+      { id: 'A', text: 'Google' },
+      { id: 'B', text: 'Amazon' },
+      { id: 'C', text: 'Microsoft' },
+      { id: 'D', text: 'Meta' },
+    ],
+    correctOptionId: 'C',
+  },
 ]
 
 export const SECTION_2_POOL: readonly MCQQuestion[] = [
@@ -261,6 +321,78 @@ export const SECTION_2_POOL: readonly MCQQuestion[] = [
     ],
     correctOptionId: 'B',
   },
+  {
+    id: 'q26',
+    section: 2,
+    prompt: 'What is a browser cookie primarily used for?',
+    options: [
+      { id: 'A', text: 'Physically storing a website on your computer' },
+      { id: 'B', text: 'Storing small pieces of information related to a website' },
+      { id: 'C', text: 'Protecting your computer from viruses' },
+      { id: 'D', text: 'Increasing your internet speed' },
+    ],
+    correctOptionId: 'B',
+  },
+  {
+    id: 'q27',
+    section: 2,
+    prompt: 'Which of the following is an example of two-factor authentication?',
+    options: [
+      { id: 'A', text: 'Using two passwords' },
+      { id: 'B', text: 'Using a password and an OTP' },
+      { id: 'C', text: 'Using a longer password' },
+      { id: 'D', text: 'Changing your password twice' },
+    ],
+    correctOptionId: 'B',
+  },
+  {
+    id: 'q28',
+    section: 2,
+    prompt: 'Which data structure follows the LIFO principle?',
+    options: [
+      { id: 'A', text: 'Queue' },
+      { id: 'B', text: 'Array' },
+      { id: 'C', text: 'Stack' },
+      { id: 'D', text: 'Linked List' },
+    ],
+    correctOptionId: 'C',
+  },
+  {
+    id: 'q29',
+    section: 2,
+    prompt: 'Which company owns Instagram?',
+    options: [
+      { id: 'A', text: 'Apple' },
+      { id: 'B', text: 'Amazon' },
+      { id: 'C', text: 'Meta' },
+      { id: 'D', text: 'Microsoft' },
+    ],
+    correctOptionId: 'C',
+  },
+  {
+    id: 'q30',
+    section: 2,
+    prompt: 'Which company makes the Xbox gaming console?',
+    options: [
+      { id: 'A', text: 'Sony' },
+      { id: 'B', text: 'Nintendo' },
+      { id: 'C', text: 'Microsoft' },
+      { id: 'D', text: 'Sega' },
+    ],
+    correctOptionId: 'C',
+  },
+  {
+    id: 'q31',
+    section: 2,
+    prompt: 'What does a VPN primarily do?',
+    options: [
+      { id: 'A', text: "Increases your device's RAM" },
+      { id: 'B', text: 'Creates an encrypted connection over a network' },
+      { id: 'C', text: 'Removes computer viruses' },
+      { id: 'D', text: 'Converts websites into apps' },
+    ],
+    correctOptionId: 'B',
+  },
 ]
 
 /**
@@ -360,7 +492,7 @@ export const QUIZ_SECTIONS: readonly SectionMeta[] = [
     shortName: 'Knowledge',
     description:
       'Ten core fundamentals. One submission per question — choose carefully.',
-    count: 10,
+    count: 15,
     type: 'mcq',
   },
   {
@@ -369,8 +501,8 @@ export const QUIZ_SECTIONS: readonly SectionMeta[] = [
     name: 'Advanced Computer Knowledge',
     shortName: 'Advanced',
     description:
-      'Ten questions on networks, hardware and everyday computing.',
-    count: 10,
+      'Sixteen questions on networks, hardware, databases, software development, and everyday computing.',
+    count: 16,
     type: 'mcq',
   },
   {
@@ -391,7 +523,7 @@ export const SECTION_BY_ID: Record<SectionId, SectionMeta> = {
   3: QUIZ_SECTIONS[2],
 }
 
-export const TOTAL_QUESTIONS = 24
+export const TOTAL_QUESTIONS = 35
 
 export const ALL_MCQ_QUESTIONS: readonly MCQQuestion[] = [
   ...SECTION_1_POOL,

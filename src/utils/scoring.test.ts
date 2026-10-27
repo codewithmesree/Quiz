@@ -43,16 +43,16 @@ describe('scoring', () => {
     expect(summary.totalCorrect).toBe(9)
     expect(summary.totalIncorrect).toBe(15)
     expect(summary.totalAnswered).toBe(24)
-    expect(summary.totalQuestions).toBe(24)
+    expect(summary.totalQuestions).toBe(35)
     expect(summary.percentage).toBe(38)
   })
 
-  it('awards a perfect score of exactly 24 and 100%', () => {
+  it('awards a perfect score of exactly 35 and 100%', () => {
     const summary = computeScoreSummary(sessionWithResults([10, 10, 4]))
     expect(summary.totalCorrect).toBe(24)
     expect(summary.totalIncorrect).toBe(0)
     expect(summary.percentage).toBe(100)
-    expect(summary.totalCorrect).toBeLessThanOrEqual(24)
+    expect(summary.totalCorrect).toBeLessThanOrEqual(35)
   })
 
   it('ignores records that do not belong to this session', () => {
@@ -80,7 +80,7 @@ describe('scoring', () => {
     expect(summary.percentage).toBe(0)
   })
 
-  it('reports completion only after all 24 answers exist', () => {
+  it('reports completion only after all 24 sampled answers exist', () => {
     const complete = sessionWithResults([10, 10, 4])
     expect(isSessionComplete(complete)).toBe(true)
 

@@ -10,6 +10,7 @@ import { ConfirmDialog } from '../ConfirmDialog'
 import { RunButton } from './RunButton'
 import { StageNavigation } from './StageNavigation'
 import { SubmitButton } from './SubmitButton'
+import { TimerDisplay } from './TimerDisplay'
 import type {
   CodingStageId,
   ExecutionStatus,
@@ -22,6 +23,13 @@ interface CodingHeaderProps {
   unlockedStages: readonly CodingStageId[]
   executionStatus: ExecutionStatus
   isValidating: boolean
+  isTimeExpired?: boolean
+  timerDisplay?: {
+    displayTime: string
+    remainingMs: number
+    isExpired: boolean
+    isRunning: boolean
+  }
   onSelectStage: (stageId: CodingStageId) => void
   onRun: () => void
   onStop: () => void
@@ -37,6 +45,8 @@ export function CodingHeader({
   unlockedStages,
   executionStatus,
   isValidating,
+  isTimeExpired,
+  timerDisplay,
   onSelectStage,
   onRun,
   onStop,
@@ -97,6 +107,15 @@ export function CodingHeader({
 
           {/* Right: Run, Submit & Reset Controls */}
           <div className="order-2 flex items-center gap-2 lg:order-3">
+            {timerDisplay && (
+              <TimerDisplay
+                displayTime={timerDisplay.displayTime}
+                remainingMs={timerDisplay.remainingMs}
+                isExpired={timerDisplay.isExpired}
+                isRunning={timerDisplay.isRunning}
+              />
+            )}
+
             <RunButton
               status={executionStatus}
               onRun={onRun}
@@ -106,6 +125,7 @@ export function CodingHeader({
             <SubmitButton
               isValidating={isValidating}
               isCompleted={isCurrentCompleted}
+              isTimeExpired={isTimeExpired}
               onSubmit={onSubmit}
             />
 

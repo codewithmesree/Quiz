@@ -374,7 +374,7 @@ export function WelcomePage({
         {stage === 'auth' && (
           <section className="surface animate-fade-up w-full max-w-md overflow-hidden">
             <div className="h-1 bg-gradient-to-r from-hwi via-hwi/50 to-transparent" />
-            <div className="p-6 sm:p-8">
+            <div className="p-5 sm:p-6">
               <button
                 type="button"
                 onClick={() => { setStage('home'); setError('') }}
@@ -442,7 +442,7 @@ export function WelcomePage({
         {stage === 'rules' && (
           <section className="surface animate-fade-up w-full max-w-2xl overflow-hidden">
             <div className="h-1 bg-gradient-to-r from-hwi via-hwi/50 to-transparent" />
-            <div className="p-6 sm:p-9">
+            <div className="p-5 sm:p-7">
               <p className="text-[9px] font-bold uppercase tracking-[0.26em] text-hwi">Team check-in · {teamName.trim()}</p>
               <h2 className="mt-2 font-display text-3xl font-bold text-white sm:text-4xl">Know the rules</h2>
               <p className="mt-2 text-sm text-white/50">A quick briefing before your team enters the arena.</p>

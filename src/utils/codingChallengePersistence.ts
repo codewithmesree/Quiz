@@ -6,6 +6,7 @@ import type {
 
 export const CODING_CHALLENGE_STORAGE_KEY = 'hwi-coding-challenge-state-v2'
 const STORAGE_VERSION = 2
+const CODING_TIMER_DURATION = 40 * 60 * 1000 // 40 minutes in milliseconds
 
 export function getDefaultStarterCodes(): Record<CodingStageId, string> {
   const codes: Partial<Record<CodingStageId, string>> = {}
@@ -23,6 +24,8 @@ export function getDefaultCodingChallengeState(): CodingChallengeState {
     completedStages: [],
     unlockedStages: ['part-1'],
     lastUpdated: Date.now(),
+    timerStatus: 'not_started',
+    instructionsViewed: false,
   }
 }
 
@@ -96,6 +99,13 @@ export function loadCodingChallengeState(): CodingChallengeState {
       }
     }
 
+    const timerStartTime = typeof parsed.timerStartTime === 'number' ? parsed.timerStartTime : undefined
+    const timerDeadline = typeof parsed.timerDeadline === 'number' ? parsed.timerDeadline : undefined
+    const timerStatus = (parsed.timerStatus === 'not_started' || parsed.timerStatus === 'running' || parsed.timerStatus === 'expired') 
+      ? parsed.timerStatus 
+      : 'not_started'
+    const instructionsViewed = typeof parsed.instructionsViewed === 'boolean' ? parsed.instructionsViewed : false
+
     return {
       version: STORAGE_VERSION,
       currentStageId,
@@ -106,6 +116,10 @@ export function loadCodingChallengeState(): CodingChallengeState {
         typeof parsed.lastUpdated === 'number'
           ? parsed.lastUpdated
           : Date.now(),
+      timerStartTime,
+      timerDeadline,
+      timerStatus,
+      instructionsViewed,
     }
   } catch {
     return getDefaultCodingChallengeState()
@@ -126,6 +140,10 @@ export function saveCodingChallengeState(state: CodingChallengeState): void {
       completedStages: state.completedStages,
       unlockedStages: state.unlockedStages,
       lastUpdated: Date.now(),
+      timerStartTime: state.timerStartTime,
+      timerDeadline: state.timerDeadline,
+      timerStatus: state.timerStatus,
+      instructionsViewed: state.instructionsViewed,
     }
     window.localStorage.setItem(
       CODING_CHALLENGE_STORAGE_KEY,
@@ -143,4 +161,57 @@ export function resetCodingChallengeState(): CodingChallengeState {
   const fresh = getDefaultCodingChallengeState()
   saveCodingChallengeState(fresh)
   return fresh
+}
+
+/**
+ * Starts the 40-minute timer for the coding round.
+ * Should only be called once when the first code edit is detected.
+ */
+export function startCodingTimer(state: CodingChallengeState): CodingChallengeState {
+  if (state.timerStatus !== 'not_started') {
+    // Timer already started, don't restart
+    return state
+  }
+  const now = Date.now()
+  const updated: CodingChallengeState = {
+    ...state,
+    timerStartTime: now,
+    timerDeadline: now + CODING_TIMER_DURATION,
+    timerStatus: 'running',
+  }
+  saveCodingChallengeState(updated)
+  return updated
+}
+
+/**
+ * Calculate remaining time in milliseconds.
+ * Returns 0 if time has expired.
+ */
+export function getRemainingTime(state: CodingChallengeState): number {
+  if (!state.timerDeadline || state.timerStatus === 'not_started') {
+    return CODING_TIMER_DURATION
+  }
+  if (state.timerStatus === 'expired') {
+    return 0
+  }
+  const remaining = state.timerDeadline - Date.now()
+  return Math.max(0, remaining)
+}
+
+/**
+ * Check if deadline has passed and mark as expired if needed.
+ */
+export function updateTimerStatus(state: CodingChallengeState): CodingChallengeState {
+  if (state.timerStatus !== 'running' || !state.timerDeadline) {
+    return state
+  }
+  if (Date.now() >= state.timerDeadline) {
+    const updated: CodingChallengeState = {
+      ...state,
+      timerStatus: 'expired',
+    }
+    saveCodingChallengeState(updated)
+    return updated
+  }
+  return state
 }

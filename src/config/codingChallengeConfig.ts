@@ -38,31 +38,7 @@ export const GUESS_THE_NUMBER_STAGES: readonly StageDefinition[] = [
       'To convert a string to a number, pass it to `int(value)`. Be sure to only do this after validating!',
       'You can test with both valid numbers (e.g. 42) and invalid characters (e.g. "abc") in the terminal.',
     ],
-    starterCode: `# ============================================================
-# ACCESS DENIED // Python Code Lab
-# Challenge: Guess the Number
-# Stage 1: Input and Validation
-# ============================================================
-# Task: Write a program that generates a secret number (1-100),
-# prompts the user for a guess, validates that input is numeric,
-# and converts it to an integer.
-# ============================================================
-
-import random
-
-# Step 1: Generate a secret target number between 1 and 100
-# TODO: target = random.randint(1, 100)
-
-
-# Step 2: Prompt the player for their guess
-# TODO: user_input = input("Enter your guess (1-100): ")
-
-
-# Step 3: Validate the input using .isdigit() and convert with int()
-# TODO: Write your validation and conversion logic below:
-
-
-`,
+    starterCode: ``,
     validate: validatePart1,
   },
   {
@@ -93,33 +69,7 @@ import random
       'Use `if...elif...else` branching to compare `guess` against `target`.',
       'The `break` statement exits the nearest enclosing while loop when the user wins.',
     ],
-    starterCode: `# ============================================================
-# ACCESS DENIED // Python Code Lab
-# Challenge: Guess the Number
-# Stage 2: Game Logic
-# ============================================================
-# Task: Build the complete gameplay loop with attempt counter
-# and branching comparisons ("Too low", "Too high", "Correct!").
-# ============================================================
-
-import random
-
-target = random.randint(1, 100)
-attempts = 0
-
-print("=" * 44)
-print(">>> ACCESS DENIED: GUESS THE NUMBER (STAGE 2) <<<")
-print("I'm thinking of a secret number between 1 and 100.")
-print("=" * 44)
-
-# TODO: Write your while loop below:
-# 1. Prompt the player for their guess using input()
-# 2. Validate input and convert to integer
-# 3. Increment attempts
-# 4. Compare guess against target (Too low / Too high / Win)
-
-
-`,
+    starterCode: ``,
     validate: validatePart2,
   },
   {

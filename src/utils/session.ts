@@ -1,4 +1,4 @@
-import { RIDDLES, SECTION_1_POOL, SECTION_2_POOL, TOTAL_QUESTIONS } from '../data/questions'
+import { RIDDLES, SECTION_1_POOL, SECTION_2_POOL } from '../data/questions'
 import type {
   AnyQuestion,
   MCQQuestion,
@@ -20,8 +20,8 @@ function createSessionId(): string {
  * Creates a brand-new quiz session.
  *
  * Random selection happens exactly once here — never during rendering. Both
- * MCQ pools are shuffled independently, and the four riddles always appear in
- * their original document order. Sections 1 and 2 now use all 10 questions.
+ * MCQ pools are shuffled independently, and the four riddles are shuffled
+ * in random order. Sections 1 and 2 now use all 10 questions.
  */
 export function createQuizSession(profile: PlayerProfile): QuizSession {
   return {
@@ -31,7 +31,7 @@ export function createQuizSession(profile: PlayerProfile): QuizSession {
     },
     section1: sample(SECTION_1_POOL, 10),
     section2: sample(SECTION_2_POOL, 10),
-    section3: [...RIDDLES],
+    section3: sample(RIDDLES, RIDDLES.length),
     answers: {},
   }
 }
@@ -70,8 +70,5 @@ export function isSessionComplete(session: QuizSession): boolean {
     ...session.section2,
     ...session.section3,
   ]
-  return (
-    allQuestions.length === TOTAL_QUESTIONS &&
-    allQuestions.every((question) => Boolean(session.answers[question.id]))
-  )
+  return allQuestions.every((question) => Boolean(session.answers[question.id]))
 }

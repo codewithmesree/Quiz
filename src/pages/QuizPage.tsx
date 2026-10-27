@@ -93,6 +93,7 @@ export function QuizPage({ quiz, signedInAs, onSignOut }: QuizPageProps) {
                   nextLabel={nextLabel}
                   onSubmit={submitRiddle}
                   onAdvance={advance}
+                  showAnswerKey={score.totalAnswered === totalInSection && currentSection === 3}
                 />
               ) : (
                 currentQuestion && (

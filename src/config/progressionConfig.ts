@@ -32,9 +32,9 @@ export const PROGRESSION_THRESHOLDS = {
   },
   riddles: {
     questionsShown: 4,
-    /** All 4 riddles must be answered correctly to pass the Riddle Round.
-     * Update if organizer allows partial credit. */
-    passThreshold: 4,
+    /** User needs only 1 riddle correct to pass.
+     * All answers shown after user answers all 4 riddles. */
+    passThreshold: 1,
   },
 } as const
 
