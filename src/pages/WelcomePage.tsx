@@ -158,10 +158,12 @@ export function WelcomePage({
       return
     }
     setError('')
+    // If already signed in, proceed to post-signin flow
     if (firebaseUser) {
       void handlePostSignIn(firebaseUser, trimmed)
       return
     }
+    // Otherwise, require authentication - no guest access allowed
     setAuthMode('signup')
     setStage('auth')
   }
@@ -364,7 +366,7 @@ export function WelcomePage({
               </div>
               {error && <p role="alert" className="mt-2 text-left text-xs text-red-400">{error}</p>}
             </form>
-            <p className="mt-5 text-[9px] font-semibold uppercase tracking-[0.2em] text-muted/35">Three rounds · One team · Your score</p>
+            <p className="mt-5 text-[9px] font-semibold uppercase tracking-[0.2em] text-muted/35">Three rounds · One team · Sign in required</p>
           </section>
         )}
 
@@ -429,17 +431,8 @@ export function WelcomePage({
                   {authMode === 'signup' ? 'Log in' : 'Sign up'}
                 </button>
               </p>
-              <div className="mt-4 text-center">
-                <button
-                  type="button"
-                  onClick={() => { setStage('rules'); setError('') }}
-                  className="text-[11px] font-medium text-white/40 hover:text-white/80 transition underline underline-offset-4"
-                >
-                  Skip and view rules as guest →
-                </button>
-              </div>
               <p className="mt-4 flex items-center gap-2 border-t border-white/[0.07] pt-4 text-[10px] leading-relaxed text-white/40">
-                <LockKeyhole className="size-3 shrink-0 text-hwi" />Your team progress saves automatically on this device.
+                <LockKeyhole className="size-3 shrink-0 text-hwi" />Sign in to save your progress across devices and compete on the leaderboard.
               </p>
             </div>
           </section>
@@ -473,7 +466,18 @@ export function WelcomePage({
               <p className="mt-5 text-[9px] font-semibold uppercase tracking-[0.18em] text-white/35">
                 {QUIZ_SECTIONS.length} sections
               </p>
-              <Button onClick={() => onStart({ teamName: teamName.trim() })} size="lg" className="mt-6 w-full">
+              <Button 
+                onClick={() => {
+                  if (!firebaseUser) {
+                    setError('You must sign in to start the quiz.')
+                    setStage('auth')
+                    return
+                  }
+                  onStart({ teamName: teamName.trim() })
+                }} 
+                size="lg" 
+                className="mt-6 w-full"
+              >
                 Get started <ArrowRight className="size-4" />
               </Button>
             </div>
