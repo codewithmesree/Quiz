@@ -52,7 +52,7 @@ async function goNext(user: User) {
 }
 
 async function completeMcqSection(user: User) {
-  for (let index = 0; index < 5; index += 1) {
+  for (let index = 0; index < 10; index += 1) {
     await answerCurrentMcq(user)
     await goNext(user)
   }
@@ -260,8 +260,8 @@ describe('localStorage session persistence', () => {
 
     const breakScreen = await screen.findByTestId('section-break')
     expect(breakScreen).toHaveTextContent('Way to go! Keep it up!')
-    expect(breakScreen).toHaveTextContent(/5\s*\/\s*5/i)
-    expect(screen.getByTestId('live-score')).toHaveTextContent('5/14')
+    expect(breakScreen).toHaveTextContent(/10\s*\/\s*10/i)
+    expect(screen.getByTestId('live-score')).toHaveTextContent('10/24')
 
     await enterNextSection(user)
     await screen.findByTestId('question-card')
@@ -492,19 +492,19 @@ describe('complete quiz journey', () => {
 
     expect(
       screen.getByRole('img', {
-        name: /final score: 14 out of 14, 100 percent/i,
+        name: /final score: 24 out of 24, 100 percent/i,
       }),
     ).toBeInTheDocument()
     expect(
-      screen.getByLabelText('Computer Knowledge: 5 out of 5'),
+      screen.getByLabelText('Computer Knowledge: 10 out of 10'),
     ).toBeInTheDocument()
     expect(
-      screen.getByLabelText('Advanced Computer Knowledge: 5 out of 5'),
+      screen.getByLabelText('Advanced Computer Knowledge: 10 out of 10'),
     ).toBeInTheDocument()
     expect(
       screen.getByLabelText('Computer Riddles: 4 out of 4'),
     ).toBeInTheDocument()
-    expect(screen.getAllByTestId('answer-row')).toHaveLength(14)
+    expect(screen.getAllByTestId('answer-row')).toHaveLength(24)
     expect(
       screen.getAllByAltText(/official event logo/i).length,
     ).toBeGreaterThan(0)

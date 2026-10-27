@@ -163,8 +163,8 @@ export function WelcomePage({
       void handlePostSignIn(firebaseUser, trimmed)
       return
     }
-    // Otherwise, require authentication - no guest access allowed
-    setAuthMode('signup')
+    // Otherwise, require authentication - default to login
+    setAuthMode('login')
     setStage('auth')
   }
 
@@ -317,8 +317,8 @@ export function WelcomePage({
             /* Signed-out state */
             <>
               {stage !== 'auth' && (
-                <button type="button" onClick={() => setStage('auth')} className="rounded-full border border-hwi/50 bg-hwi/10 px-5 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-white transition hover:bg-hwi">
-                  Login <span className="hidden sm:inline">/ Sign up</span>
+                <button type="button" onClick={() => { setAuthMode('login'); setStage('auth'); }} className="rounded-full border border-hwi/50 bg-hwi/10 px-5 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-white transition hover:bg-hwi">
+                  Login
                 </button>
               )}
               {stage === 'auth' && (

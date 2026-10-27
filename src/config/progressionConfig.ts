@@ -15,24 +15,20 @@ import type { SectionId } from '../types/quiz'
 
 // ---------------------------------------------------------------------------
 // CONFIGURABLE THRESHOLDS
-// NOTE: The source document states Section 2 has 10 questions but a threshold
-// of "3 correct out of 5". This implementation uses 5 questions shown and a
-// threshold of 3. If the organizer clarifies it should be 10 questions with
-// threshold 3, update questionsShown to 10 (and expand SECTION_2_POOL).
+// Both quiz sections now show 10 questions each. Teams must answer at least
+// 6 questions correctly to pass each section. Unlimited retry attempts are
+// allowed if a section is failed.
 // ---------------------------------------------------------------------------
 export const PROGRESSION_THRESHOLDS = {
   section1: {
-    questionsShown: 5,
+    questionsShown: 10,
     /** Minimum correct answers required to pass Section 1. */
-    passThreshold: 3,
+    passThreshold: 6,
   },
   section2: {
-    questionsShown: 5,
-    /** Minimum correct answers required to pass Section 2.
-     * AMBIGUITY: Source doc says "3 correct out of 5" but mentions 10 questions.
-     * Currently treating as 5 questions shown, 3 required to pass.
-     * Update both questionsShown and passThreshold if organizer clarifies. */
-    passThreshold: 3,
+    questionsShown: 10,
+    /** Minimum correct answers required to pass Section 2. */
+    passThreshold: 6,
   },
   riddles: {
     questionsShown: 4,

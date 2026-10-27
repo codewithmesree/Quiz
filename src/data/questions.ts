@@ -359,8 +359,8 @@ export const QUIZ_SECTIONS: readonly SectionMeta[] = [
     name: 'Computer Knowledge',
     shortName: 'Knowledge',
     description:
-      'Five core fundamentals. One submission per question — choose carefully.',
-    count: 5,
+      'Ten core fundamentals. One submission per question — choose carefully.',
+    count: 10,
     type: 'mcq',
   },
   {
@@ -369,8 +369,8 @@ export const QUIZ_SECTIONS: readonly SectionMeta[] = [
     name: 'Advanced Computer Knowledge',
     shortName: 'Advanced',
     description:
-      'Five questions on networks, hardware and everyday computing.',
-    count: 5,
+      'Ten questions on networks, hardware and everyday computing.',
+    count: 10,
     type: 'mcq',
   },
   {
@@ -391,7 +391,7 @@ export const SECTION_BY_ID: Record<SectionId, SectionMeta> = {
   3: QUIZ_SECTIONS[2],
 }
 
-export const TOTAL_QUESTIONS = 14
+export const TOTAL_QUESTIONS = 24
 
 export const ALL_MCQ_QUESTIONS: readonly MCQQuestion[] = [
   ...SECTION_1_POOL,

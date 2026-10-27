@@ -21,7 +21,7 @@ function createSessionId(): string {
  *
  * Random selection happens exactly once here — never during rendering. Both
  * MCQ pools are shuffled independently, and the four riddles always appear in
- * their original document order.
+ * their original document order. Sections 1 and 2 now use all 10 questions.
  */
 export function createQuizSession(profile: PlayerProfile): QuizSession {
   return {
@@ -29,8 +29,8 @@ export function createQuizSession(profile: PlayerProfile): QuizSession {
     profile: {
       teamName: profile.teamName.trim(),
     },
-    section1: sample(SECTION_1_POOL, 5),
-    section2: sample(SECTION_2_POOL, 5),
+    section1: sample(SECTION_1_POOL, 10),
+    section2: sample(SECTION_2_POOL, 10),
     section3: [...RIDDLES],
     answers: {},
   }

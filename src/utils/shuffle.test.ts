@@ -17,9 +17,9 @@ describe('shuffle', () => {
     const ids = SECTION_1_POOL.map((question) => question.id)
 
     for (let run = 0; run < 50; run += 1) {
-      const selected = sample(SECTION_1_POOL, 5)
-      expect(selected).toHaveLength(5)
-      expect(new Set(selected.map((question) => question.id)).size).toBe(5)
+      const selected = sample(SECTION_1_POOL, 10)
+      expect(selected).toHaveLength(10)
+      expect(new Set(selected.map((question) => question.id)).size).toBe(10)
       expect(selected.every((question) => ids.includes(question.id))).toBe(true)
     }
   })
@@ -29,8 +29,8 @@ describe('shuffle', () => {
     const sectionTwoIds = new Set(SECTION_2_POOL.map((question) => question.id))
 
     for (let run = 0; run < 25; run += 1) {
-      const one = sample(SECTION_1_POOL, 5)
-      const two = sample(SECTION_2_POOL, 5)
+      const one = sample(SECTION_1_POOL, 10)
+      const two = sample(SECTION_2_POOL, 10)
       expect(one.every((question) => sectionOneIds.has(question.id))).toBe(true)
       expect(two.every((question) => sectionTwoIds.has(question.id))).toBe(true)
     }

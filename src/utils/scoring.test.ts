@@ -37,26 +37,26 @@ describe('scoring', () => {
   it('calculates section and overall scores from answer records', () => {
     const summary = computeScoreSummary(sessionWithResults([2, 4, 3]))
 
-    expect(summary.sections[1]).toEqual({ score: 2, total: 5 })
-    expect(summary.sections[2]).toEqual({ score: 4, total: 5 })
+    expect(summary.sections[1]).toEqual({ score: 2, total: 10 })
+    expect(summary.sections[2]).toEqual({ score: 4, total: 10 })
     expect(summary.sections[3]).toEqual({ score: 3, total: 4 })
     expect(summary.totalCorrect).toBe(9)
-    expect(summary.totalIncorrect).toBe(5)
-    expect(summary.totalAnswered).toBe(14)
-    expect(summary.totalQuestions).toBe(14)
-    expect(summary.percentage).toBe(64)
+    expect(summary.totalIncorrect).toBe(15)
+    expect(summary.totalAnswered).toBe(24)
+    expect(summary.totalQuestions).toBe(24)
+    expect(summary.percentage).toBe(38)
   })
 
-  it('awards a perfect score of exactly 14 and 100%', () => {
-    const summary = computeScoreSummary(sessionWithResults([5, 5, 4]))
-    expect(summary.totalCorrect).toBe(14)
+  it('awards a perfect score of exactly 24 and 100%', () => {
+    const summary = computeScoreSummary(sessionWithResults([10, 10, 4]))
+    expect(summary.totalCorrect).toBe(24)
     expect(summary.totalIncorrect).toBe(0)
     expect(summary.percentage).toBe(100)
-    expect(summary.totalCorrect).toBeLessThanOrEqual(14)
+    expect(summary.totalCorrect).toBeLessThanOrEqual(24)
   })
 
   it('ignores records that do not belong to this session', () => {
-    const session = sessionWithResults([5, 5, 4])
+    const session = sessionWithResults([10, 10, 4])
     const withExtras: QuizSession = {
       ...session,
       answers: {
@@ -67,7 +67,7 @@ describe('scoring', () => {
     }
 
     const summary = computeScoreSummary(withExtras)
-    expect(summary.totalCorrect).toBe(14)
+    expect(summary.totalCorrect).toBe(24)
     expect(summary.totalIncorrect).toBe(0)
     expect(summary.percentage).toBe(100)
   })
@@ -80,11 +80,11 @@ describe('scoring', () => {
     expect(summary.percentage).toBe(0)
   })
 
-  it('reports completion only after all 14 answers exist', () => {
-    const complete = sessionWithResults([5, 5, 4])
+  it('reports completion only after all 24 answers exist', () => {
+    const complete = sessionWithResults([10, 10, 4])
     expect(isSessionComplete(complete)).toBe(true)
 
-    const incomplete = sessionWithResults([5, 5, 4])
+    const incomplete = sessionWithResults([10, 10, 4])
     const answers = { ...incomplete.answers }
     delete answers[incomplete.section3[3].id]
     expect(isSessionComplete({ ...incomplete, answers })).toBe(false)

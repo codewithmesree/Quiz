@@ -7,20 +7,20 @@ const PROFILE = {
 }
 
 describe('quiz session creation', () => {
-  it('creates a stable session with five unique questions per MCQ section', () => {
+  it('creates a stable session with ten unique questions per MCQ section', () => {
     const sectionOneIds = new Set(SECTION_1_POOL.map((question) => question.id))
     const sectionTwoIds = new Set(SECTION_2_POOL.map((question) => question.id))
 
     for (let run = 0; run < 30; run += 1) {
       const session = createQuizSession(PROFILE)
-      expect(session.section1).toHaveLength(5)
-      expect(session.section2).toHaveLength(5)
+      expect(session.section1).toHaveLength(10)
+      expect(session.section2).toHaveLength(10)
       expect(session.section3).toHaveLength(4)
       expect(new Set(session.section1.map((question) => question.id)).size).toBe(
-        5,
+        10,
       )
       expect(new Set(session.section2.map((question) => question.id)).size).toBe(
-        5,
+        10,
       )
       expect(
         session.section1.every((question) => sectionOneIds.has(question.id)),

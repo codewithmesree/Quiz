@@ -36,8 +36,8 @@ describe('question bank', () => {
   it('contains exactly the 20 source MCQs and 4 source riddles', () => {
     expect(ALL_MCQ_QUESTIONS).toHaveLength(20)
     expect(RIDDLES).toHaveLength(4)
-    expect(TOTAL_QUESTIONS).toBe(14)
-    expect(QUIZ_SECTIONS.map((section) => section.count)).toEqual([5, 5, 4])
+    expect(TOTAL_QUESTIONS).toBe(24)
+    expect(QUIZ_SECTIONS.map((section) => section.count)).toEqual([10, 10, 4])
   })
 
   it('keeps Q1–Q10 in section 1 and Q11–Q20 in section 2', () => {

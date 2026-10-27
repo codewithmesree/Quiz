@@ -42,7 +42,7 @@ function parseMcqSection(
   value: unknown,
   section: 1 | 2,
 ): MCQQuestion[] | null {
-  if (!Array.isArray(value) || value.length !== 5) return null
+  if (!Array.isArray(value) || value.length !== 10) return null
 
   const questions: MCQQuestion[] = []
   const seen = new Set<string>()
@@ -182,7 +182,7 @@ function parseState(value: unknown): QuizState | null {
     return null
   }
 
-  const sectionLength = currentSection === 3 ? 4 : 5
+  const sectionLength = currentSection === 3 ? 4 : 10
   if (currentIndex >= sectionLength) return null
 
   const sectionBreak = value.sectionBreak

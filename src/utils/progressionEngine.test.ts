@@ -41,12 +41,12 @@ function createMockSessionWithScore(section: 1 | 2 | 3, correctCount: number): Q
 }
 
 describe('Game Rules and Progression Acceptance Tests', () => {
-  // 1. A team answers only 2 of Section 1 questions correctly: Code 1 remains locked.
-  it('Acceptance Test 1: Section 1 failure (score 2/5) keeps Code 1 locked', () => {
-    const session = createMockSessionWithScore(1, 2)
+  // 1. A team answers only 5 of Section 1 questions correctly: Code 1 remains locked.
+  it('Acceptance Test 1: Section 1 failure (score 5/10) keeps Code 1 locked', () => {
+    const session = createMockSessionWithScore(1, 5)
     const evalResult = evaluateQuizSection(session, 1)
     expect(evalResult.passed).toBe(false)
-    expect(evalResult.score).toBe(2)
+    expect(evalResult.score).toBe(5)
 
     const stageResults: StageResultMap = {
       'quiz-section-1': recordStageAttempt(undefined, evalResult.passed, evalResult.score, evalResult.total),
@@ -61,8 +61,8 @@ describe('Game Rules and Progression Acceptance Tests', () => {
   })
 
   // 2. The same team retries Section 1 and meets the threshold: Code 1 unlocks.
-  it('Acceptance Test 2: Retrying Section 1 and passing (3/5) unlocks Code 1', () => {
-    const sessionAttempt1 = createMockSessionWithScore(1, 2)
+  it('Acceptance Test 2: Retrying Section 1 and passing (6/10) unlocks Code 1', () => {
+    const sessionAttempt1 = createMockSessionWithScore(1, 5)
     const eval1 = evaluateQuizSection(sessionAttempt1, 1)
 
     let stageResults: StageResultMap = {
@@ -71,8 +71,8 @@ describe('Game Rules and Progression Acceptance Tests', () => {
     expect(stageResults['quiz-section-1']?.attempts).toBe(1)
     expect(stageResults['quiz-section-1']?.passed).toBe(false)
 
-    // Retry Section 1 with 4/5
-    const sessionAttempt2 = createMockSessionWithScore(1, 4)
+    // Retry Section 1 with 7/10
+    const sessionAttempt2 = createMockSessionWithScore(1, 7)
     const eval2 = evaluateQuizSection(sessionAttempt2, 1)
     expect(eval2.passed).toBe(true)
 
@@ -90,7 +90,7 @@ describe('Game Rules and Progression Acceptance Tests', () => {
   // 3. A team submits incorrect Code 1: it stays in Code 1.
   it('Acceptance Test 3: Incorrect Code 1 keeps the team in Code 1 without unlocking Section 2', () => {
     const stageResults: StageResultMap = {
-      'quiz-section-1': { passed: true, score: 4, total: 5, attempts: 1 },
+      'quiz-section-1': { passed: true, score: 7, total: 10, attempts: 1 },
     }
     // Submitting incorrect solution does NOT add part-1 to codingPassed
     const codingPassed: CodingStagePassMap = { 'part-1': false }
@@ -105,7 +105,7 @@ describe('Game Rules and Progression Acceptance Tests', () => {
   // 4. A team submits a valid Code 1 solution: the next required stage (Quiz Section 2) unlocks.
   it('Acceptance Test 4: Passing Code 1 unlocks Quiz Section 2', () => {
     const stageResults: StageResultMap = {
-      'quiz-section-1': { passed: true, score: 3, total: 5, attempts: 1 },
+      'quiz-section-1': { passed: true, score: 6, total: 10, attempts: 1 },
     }
     const codingPassed: CodingStagePassMap = { 'part-1': true }
 
@@ -117,12 +117,12 @@ describe('Game Rules and Progression Acceptance Tests', () => {
 
   // 5. A team fails Section 2: Code 2 remains locked.
   it('Acceptance Test 5: Failing Section 2 keeps Code 2 locked', () => {
-    const session = createMockSessionWithScore(2, 2)
+    const session = createMockSessionWithScore(2, 4)
     const evalResult = evaluateQuizSection(session, 2)
     expect(evalResult.passed).toBe(false)
 
     const stageResults: StageResultMap = {
-      'quiz-section-1': { passed: true, score: 3, total: 5, attempts: 1 },
+      'quiz-section-1': { passed: true, score: 6, total: 10, attempts: 1 },
       'quiz-section-2': recordStageAttempt(undefined, evalResult.passed, evalResult.score, evalResult.total),
     }
     const codingPassed: CodingStagePassMap = { 'part-1': true }
@@ -136,8 +136,8 @@ describe('Game Rules and Progression Acceptance Tests', () => {
   // 6. A team retries Section 2 and passes: Code 2 unlocks.
   it('Acceptance Test 6: Retrying Section 2 and passing unlocks Code 2', () => {
     const stageResults: StageResultMap = {
-      'quiz-section-1': { passed: true, score: 3, total: 5, attempts: 1 },
-      'quiz-section-2': { passed: true, score: 3, total: 5, attempts: 2 },
+      'quiz-section-1': { passed: true, score: 6, total: 10, attempts: 1 },
+      'quiz-section-2': { passed: true, score: 6, total: 10, attempts: 2 },
     }
     const codingPassed: CodingStagePassMap = { 'part-1': true }
 
@@ -154,8 +154,8 @@ describe('Game Rules and Progression Acceptance Tests', () => {
     expect(evalResult.passed).toBe(false)
 
     const stageResults: StageResultMap = {
-      'quiz-section-1': { passed: true, score: 3, total: 5, attempts: 1 },
-      'quiz-section-2': { passed: true, score: 3, total: 5, attempts: 1 },
+      'quiz-section-1': { passed: true, score: 6, total: 10, attempts: 1 },
+      'quiz-section-2': { passed: true, score: 6, total: 10, attempts: 1 },
       riddles: recordStageAttempt(undefined, evalResult.passed, evalResult.score, evalResult.total),
     }
     const codingPassed: CodingStagePassMap = { 'part-1': true, 'part-2': true }
@@ -173,8 +173,8 @@ describe('Game Rules and Progression Acceptance Tests', () => {
     expect(evalResult.passed).toBe(true)
 
     const stageResults: StageResultMap = {
-      'quiz-section-1': { passed: true, score: 3, total: 5, attempts: 1 },
-      'quiz-section-2': { passed: true, score: 3, total: 5, attempts: 1 },
+      'quiz-section-1': { passed: true, score: 6, total: 10, attempts: 1 },
+      'quiz-section-2': { passed: true, score: 6, total: 10, attempts: 1 },
       riddles: recordStageAttempt(undefined, evalResult.passed, evalResult.score, evalResult.total),
     }
     const codingPassed: CodingStagePassMap = { 'part-1': true, 'part-2': true }
@@ -208,8 +208,8 @@ describe('Game Rules and Progression Acceptance Tests', () => {
   // 11. Refreshing the page does not erase completed stages or bypass locked ones.
   it('Acceptance Test 11: Stage state round-trips via JSON serialization without losing unlock state', () => {
     const stageResults: StageResultMap = {
-      'quiz-section-1': { passed: true, score: 4, total: 5, attempts: 1 },
-      'quiz-section-2': { passed: false, score: 1, total: 5, attempts: 1 },
+      'quiz-section-1': { passed: true, score: 7, total: 10, attempts: 1 },
+      'quiz-section-2': { passed: false, score: 3, total: 10, attempts: 1 },
     }
     const codingPassed: CodingStagePassMap = { 'part-1': true }
 
@@ -230,8 +230,8 @@ describe('Game Rules and Progression Acceptance Tests', () => {
   it('Acceptance Test 12: Fraudulent later stage marks without preceding pass are rejected', () => {
     // Attempted cheat: marked section 2 as passed, but section 1 failed
     const spoofedResults: StageResultMap = {
-      'quiz-section-1': { passed: false, score: 1, total: 5, attempts: 1 },
-      'quiz-section-2': { passed: true, score: 5, total: 5, attempts: 1 },
+      'quiz-section-1': { passed: false, score: 2, total: 10, attempts: 1 },
+      'quiz-section-2': { passed: true, score: 9, total: 10, attempts: 1 },
     }
     const codingPassed: CodingStagePassMap = { 'part-1': true }
 
@@ -254,21 +254,21 @@ describe('Game Rules and Progression Acceptance Tests', () => {
 
   // 14. Repeated submissions do not accidentally award duplicate completion credit.
   it('Acceptance Test 14: Repeated attempts update attempts count without duplicate credit', () => {
-    let result = recordStageAttempt(undefined, true, 4, 5)
+    let result = recordStageAttempt(undefined, true, 7, 10)
     expect(result.attempts).toBe(1)
     expect(result.passed).toBe(true)
 
     // Repeat attempt
-    result = recordStageAttempt(result, true, 5, 5)
+    result = recordStageAttempt(result, true, 8, 10)
     expect(result.attempts).toBe(2)
-    expect(result.score).toBe(5)
+    expect(result.score).toBe(8)
   })
 
   // 15. A failed attempt does not erase progress from previously passed stages.
   it('Acceptance Test 15: Failing Section 2 preserves Section 1 and Code 1 completion', () => {
     const stageResults: StageResultMap = {
-      'quiz-section-1': { passed: true, score: 4, total: 5, attempts: 1 },
-      'quiz-section-2': { passed: false, score: 1, total: 5, attempts: 1 },
+      'quiz-section-1': { passed: true, score: 7, total: 10, attempts: 1 },
+      'quiz-section-2': { passed: false, score: 3, total: 10, attempts: 1 },
     }
     const codingPassed: CodingStagePassMap = { 'part-1': true }
 

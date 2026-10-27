@@ -271,9 +271,9 @@ function quizReducer(state: QuizState, action: QuizAction): QuizState {
       let newSection3 = state.session.section3
 
       if (failedSection === 1) {
-        newSection1 = sample(SECTION_1_POOL, 5)
+        newSection1 = sample(SECTION_1_POOL, 10)
       } else if (failedSection === 2) {
-        newSection2 = sample(SECTION_2_POOL, 5)
+        newSection2 = sample(SECTION_2_POOL, 10)
       } else {
         newSection3 = [...RIDDLES]
       }
