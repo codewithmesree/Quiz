@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import type { FormEvent } from 'react'
 import { ArrowLeft, ArrowRight, LockKeyhole, LogOut, Trophy, Users } from 'lucide-react'
 import {
   createUserWithEmailAndPassword,
@@ -148,25 +147,6 @@ export function WelcomePage({
   // ---------------------------------------------------------------------------
   // Handlers
   // ---------------------------------------------------------------------------
-
-  function handleTeamSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    const trimmed = teamName.trim()
-    if (!trimmed) {
-      setError('Enter your team name to continue.')
-      formRef.current?.querySelector('input')?.focus()
-      return
-    }
-    setError('')
-    // If already signed in, proceed to post-signin flow
-    if (firebaseUser) {
-      void handlePostSignIn(firebaseUser, trimmed)
-      return
-    }
-    // Otherwise, require authentication - default to login
-    setAuthMode('login')
-    setStage('auth')
-  }
 
   async function handleSignOut() {
     const auth = getFirebaseAuth()
@@ -341,7 +321,7 @@ export function WelcomePage({
               ACCESS <span className="text-hwi drop-shadow-[0_0_38px_rgba(255,0,85,0.3)]">DENIED</span>
               <span className="block pt-4 text-[0.34em] tracking-[0.4em] text-white/80">— QUIZ</span>
             </h1>
-            <form ref={formRef} onSubmit={handleTeamSubmit} className="mx-auto mt-12 w-full max-w-xl">
+            <form ref={formRef} className="mx-auto mt-12 w-full max-w-xl">
               <label htmlFor="homeTeamName" className="sr-only">Team name</label>
               <div className="flex items-center rounded-2xl border border-white/15 bg-black/45 p-2 shadow-[0_16px_60px_rgba(0,0,0,0.35)] transition focus-within:border-hwi/70 focus-within:shadow-[0_0_30px_rgba(255,0,85,0.12)]">
                 <Users className="ml-3 size-5 shrink-0 text-hwi" aria-hidden="true" />
@@ -356,13 +336,14 @@ export function WelcomePage({
                   aria-invalid={Boolean(error)}
                   className="min-w-0 flex-1 bg-transparent px-3 py-3 font-display text-base text-white outline-none placeholder:text-white/45 sm:text-lg"
                 />
-                <button
-                  type="submit"
-                  aria-label="Start Quiz"
-                  className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl bg-hwi px-4 text-[10px] font-bold uppercase tracking-[0.14em] text-white transition hover:bg-hwi-bright sm:px-5 sm:text-xs"
-                >
-                  Enter <ArrowRight className="size-4" />
-                </button>
+              <button
+                type="button"
+                onClick={() => { setAuthMode('signup'); setStage('auth'); }}
+                aria-label="Start Quiz"
+                className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl bg-hwi px-4 text-[10px] font-bold uppercase tracking-[0.14em] text-white transition hover:bg-hwi-bright sm:px-5 sm:text-xs"
+              >
+                Enter <ArrowRight className="size-4" />
+              </button>
               </div>
               {error && <p role="alert" className="mt-2 text-left text-xs text-red-400">{error}</p>}
             </form>
